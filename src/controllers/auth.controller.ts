@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { User } from '../models';
+import { Role, User, UserToRole } from '../models';
 import createError from 'http-errors';
 import bcrypt from 'bcrypt';
 import {
@@ -54,6 +54,12 @@ export const registerController = async (
       phoneNum,
     });
 
+    // Add default Shopper role when register
+    await UserToRole.create({
+      userMail: email,
+      roleId: 2, // Shopper role
+    });
+
     res.status(201).json({
       status: 201,
       message: 'New account registration successful',
@@ -77,6 +83,11 @@ export const loginController = async (
       attributes: {
         exclude: ['refreshToken', 'createdAt', 'updatedAt'],
       },
+      include: [
+        {
+          model: Role,
+        },
+      ],
       where: {
         mail: email,
       },
@@ -87,17 +98,21 @@ export const loginController = async (
       throw createError.Conflict('User not register');
     }
 
+    // Create payload for token
+    const payload: userPayload = {
+      mail: user.mail,
+      role: user.role?.roleName,
+    };
+
+    // Refactor obj
+    delete user['role'];
+
     // Unhash & check password
     const hashPassword = user.password;
     const isMatch = await bcrypt.compare(password, hashPassword);
     if (!isMatch) {
       throw createError.Unauthorized('Wrong password');
     }
-
-    // Create payload for token
-    const payload: userPayload = {
-      mail: user.mail,
-    };
 
     // Create access token & refresh token
     const accessToken = await signAccessToken(payload);

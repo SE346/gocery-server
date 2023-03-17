@@ -5,7 +5,7 @@ import { Request, Response, NextFunction } from 'express';
 
 export interface userPayload extends JwtPayload {
   mail: string;
-  // role: string;
+  role?: string;
 }
 
 // Create Access Token

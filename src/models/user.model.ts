@@ -18,7 +18,7 @@ import bcrypt from 'bcrypt';
 class User extends Model {
   // Association
   @BelongsToMany(() => Role, () => UserToRole)
-  roles?: Role[];
+  role?: Role;
 
   // Column
   @Column({ type: DataType.STRING, primaryKey: true })
