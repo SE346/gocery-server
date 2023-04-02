@@ -9,9 +9,8 @@ import {
   Default,
   BeforeValidate,
   BeforeCreate,
-  AfterFind,
 } from 'sequelize-typescript';
-import { Role, UserToRole } from './';
+import { Role, Rank, UserToRole, UserToRank } from './';
 import bcrypt from 'bcrypt';
 
 @Table({ modelName: 'User', tableName: 'users' })
@@ -19,6 +18,9 @@ class User extends Model {
   // Association
   @BelongsToMany(() => Role, () => UserToRole)
   role?: Role;
+
+  @BelongsToMany(() => Rank, () => UserToRank)
+  rank!: Rank;
 
   // Column
   @Column({ type: DataType.STRING, primaryKey: true })
@@ -44,6 +46,9 @@ class User extends Model {
 
   @Column({ type: DataType.DATE, field: 'date_of_birth' })
   dateOfBirth?: Date;
+
+  @Column({ type: DataType.INTEGER, field: 'rank_id' })
+  rankId!: number;
 
   @Default('')
   @Column({ type: DataType.TEXT, field: 'refresh_token' })

@@ -7,6 +7,7 @@ CREATE TABLE users (
 	date_of_birth DATE,
 	phone_num VARCHAR(10),
 	avatar TEXT DEFAULT 'https://media.istockphoto.com/id/1223671392/vector/default-profile-picture-avatar-photo-placeholder-vector-illustration.jpg?s=170667a&w=0&k=20&c=m-F9Doa2ecNYEEjeplkFCmZBlc5tm1pl1F7cBCh9ZzM=',
+	rank_id INTEGER DEFAULT 1,
 	refresh_token TEXT DEFAULT '',
 	created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
@@ -40,5 +41,37 @@ CREATE TABLE user_to_role (
 );
 CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON user_to_role
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE RANK:
+CREATE TABLE rank (
+    rank_id SERIAL PRIMARY KEY,
+    rank_name VARCHAR(255) NOT NULL,
+    rank_description TEXT,
+	next_rank VARCHAR(255),
+    transaction_target INTEGER NOT NULL,
+	monney_acc_target INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON rank
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE USERTORANK:
+CREATE TABLE user_to_rank (
+    user_mail TEXT NOT NULL REFERENCES users(mail),
+    rank_id INTEGER NOT NULL REFERENCES rank(rank_id),
+	monney_acc_cur INTEGER DEFAULT 0,
+	transaction_cur INTEGER DEFAULT 0,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY  KEY (user_mail, rank_id)
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON user_to_rank
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();

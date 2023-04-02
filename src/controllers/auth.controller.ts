@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Role, User, UserToRole } from '../models';
+import { Rank, Role, User, UserToRank, UserToRole } from '../models';
 import createError from 'http-errors';
 import bcrypt from 'bcrypt';
 import {
@@ -60,6 +60,12 @@ export const registerController = async (
       roleId: 2, // Shopper role
     });
 
+    // Add default 'Đồng' rank when register
+    await UserToRank.create({
+      userMail: email,
+      rankId: 1, // 'Đồng' rank
+    });
+
     res.status(201).json({
       status: 201,
       message: 'New account registration successful',
@@ -87,6 +93,9 @@ export const loginController = async (
         {
           model: Role,
         },
+        {
+          model: Rank,
+        },
       ],
       where: {
         mail: email,
@@ -98,21 +107,47 @@ export const loginController = async (
       throw createError.Conflict('User not register');
     }
 
-    // Create payload for token
-    const payload: userPayload = {
-      mail: user.mail,
-      role: user.role?.roleName,
-    };
-
-    // Refactor obj
-    delete user['role'];
-
     // Unhash & check password
     const hashPassword = user.password;
     const isMatch = await bcrypt.compare(password, hashPassword);
     if (!isMatch) {
       throw createError.Unauthorized('Wrong password');
     }
+
+    // Create payload for token
+    const payload: userPayload = {
+      mail: user.mail,
+      role: user.role?.roleName,
+    };
+
+    // Get information about rank user
+    const curRankId = user.rankId;
+    const rankDetail = await UserToRank.findOne({
+      where: {
+        rankId: curRankId,
+        userMail: user.mail,
+      },
+      raw: true,
+      nest: true,
+    });
+
+    const { rankName, nextRank, rankDescription, transactionTarget, monneyAccTarget } = user?.rank;
+    const rank = {
+      rankName,
+      nextRank,
+      rankDescription,
+      monneyAccTarget,
+      transactionTarget,
+      moneyAccCur: rankDetail?.monneyAccCur,
+      transactionCur: rankDetail?.transactionCur,
+    };
+
+    // Refactor obj
+    delete user['role'];
+    const newUserObj = {
+      ...user,
+      rank,
+    };
 
     // Create access token & refresh token
     const accessToken = await signAccessToken(payload);
@@ -129,7 +164,7 @@ export const loginController = async (
 
     res.status(201).json({
       status: 201,
-      user: removeKey('password', user),
+      user: removeKeys(['password', 'rankId'], newUserObj),
       accessToken,
       refreshToken,
       message: 'Login successfully',
