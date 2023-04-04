@@ -23,6 +23,32 @@ export const getAllCategoryController = async (req: Request, res: Response, next
   }
 };
 
+export const addOneCategoryController = async (
+  req: Request<{}, {}, categoryModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { categoryName, categoryImage } = req.body;
+
+    if (!categoryImage || !categoryName) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    await Category.create({
+      categoryName,
+      categoryImage,
+    });
+
+    res.json({
+      status: 200,
+      message: 'Add a category successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const updateOneCategoryController = async (
   req: Request<{}, {}, categoryModel>,
   res: Response,
