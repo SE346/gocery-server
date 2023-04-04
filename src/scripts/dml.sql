@@ -34,3 +34,24 @@ insert into category(category_name, category_image) values ('Milk & Egg', 'https
 insert into category(category_name, category_image) values ('Bread', 'https://placehold.co/400x400');
 insert into category(category_name, category_image) values ('Frozen', 'https://placehold.co/400x400');
 insert into category(category_name, category_image) values ('Organic', 'https://placehold.co/400x400');
+
+-- Product table
+insert into product(product_id, category_id, name, description, price, discount, unit) values ('#123', 1, 'Xà lách búp mỡ thuỷ canh từ 200g', '', 17, 29, 'pack');
+insert into product(product_id, category_id, name, description, price, discount, unit) values ('#124', 1, 'Rau má đất 150g', '', 15, 0, 'pack');
+insert into product(product_id, category_id, name, description, price, discount, unit) values ('#125', 2, 'Đùi bò nhập khẩu đông lạnh 500gr', '', 109, 15, 'pack');
+
+
+-- ProductImg table
+insert into product_img(product_id, img_url) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202302251513359670.jpg');
+insert into product_img(product_id, img_url) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837370210.jpg');
+insert into product_img(product_id, img_url) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837374315.jpg');
+insert into product_img(product_id, img_url) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837377272.jpg');
+
+insert into product_img(product_id, img_url) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021541352775.jpg');
+insert into product_img(product_id, img_url) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536577501.jpg');
+insert into product_img(product_id, img_url) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536565210.jpg');
+insert into product_img(product_id, img_url) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536580923.jpg');
+
+insert into product_img(product_id, img_url) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-500gr-202303170948379636.jpg');
+insert into product_img(product_id, img_url) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908085639.jpg');
+insert into product_img(product_id, img_url) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg');

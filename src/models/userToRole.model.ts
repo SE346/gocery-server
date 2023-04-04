@@ -11,8 +11,6 @@ import { User, Role } from './';
 
 @Table({ modelName: 'UserToRole', tableName: 'user_to_role' })
 class UserToRole extends Model {
-  // Association
-
   // Column
   @ForeignKey(() => User)
   @Column({ type: DataType.STRING, primaryKey: true, field: 'user_mail' })

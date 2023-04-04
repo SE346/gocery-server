@@ -5,29 +5,31 @@ import {
   CreatedAt,
   UpdatedAt,
   DataType,
-  HasMany,
+  ForeignKey,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { Product } from '../models';
 
-@Table({ modelName: 'Category', tableName: 'category' })
-class Category extends Model {
+@Table({ modelName: 'ProductImg', tableName: 'product_img' })
+class ProductImg extends Model {
   // Column
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
     autoIncrement: true,
-    field: 'category_id',
+    field: 'product_img_id',
   })
   id!: number;
 
-  @HasMany(() => Product)
-  productList!: Product[];
+  @ForeignKey(() => Product)
+  @Column({ type: DataType.TEXT, field: 'product_id' })
+  productId!: string;
 
-  @Column({ type: DataType.STRING, field: 'category_name' })
-  categoryName!: string;
+  @BelongsTo(() => Product)
+  product!: Product;
 
-  @Column({ type: DataType.STRING, field: 'category_image' })
-  categoryImage!: string;
+  @Column({ type: DataType.TEXT, field: 'img_url' })
+  imgUrl!: string;
 
   @CreatedAt
   @Column({ type: DataType.DATE, field: 'created_at' })
@@ -38,4 +40,4 @@ class Category extends Model {
   updatedAt!: Date;
 }
 
-export default Category;
+export default ProductImg;

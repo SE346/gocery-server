@@ -88,3 +88,33 @@ CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON category
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE PRODUCT:
+CREATE TABLE product (
+    product_id TEXT PRIMARY KEY,
+    category_id INTEGER NOT NULL REFERENCES category(category_id),
+    name VARCHAR(255) NOT NULL,
+    description TEXT,
+    price INTEGER NOT NULL DEFAULT 0,
+    discount INTEGER NOT NULL DEFAULT 0,
+    unit VARCHAR(255) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON product
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE PRODUCTIMG:
+CREATE TABLE product_img (
+    product_img_id SERIAL PRIMARY KEY,
+    product_id TEXT NOT NULL REFERENCES product(product_id),
+    img_url TEXT NOT NULL DEFAULT 'https://placehold.co/200x200',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON product_img
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
