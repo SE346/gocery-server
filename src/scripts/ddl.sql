@@ -75,3 +75,16 @@ CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON user_to_rank
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE CATEGORY:
+CREATE TABLE category (
+    category_id SERIAL PRIMARY KEY,
+    category_name VARCHAR(255) NOT NULL,
+    category_image TEXT NOT NULL DEFAULT 'https://placehold.co/400x400',
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON category
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();

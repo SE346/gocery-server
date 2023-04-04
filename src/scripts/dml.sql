@@ -25,3 +25,12 @@ insert into user_to_rank(user_mail, rank_id) values ('20521366@gm.uit.edu.vn', 1
 insert into user_to_rank(user_mail, rank_id, monney_acc_cur, transaction_cur) values ('20521760@gm.uit.edu.vn', 1, 2100, 12);
 insert into user_to_rank(user_mail, rank_id) values ('20521760@gm.uit.edu.vn', 2);
 
+-- Category table
+insert into category(category_name, category_image) values ('Vegetables', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Fruits', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Meat', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Seafood', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Milk & Egg', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Bread', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Frozen', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Organic', 'https://placehold.co/400x400');
