@@ -56,3 +56,30 @@ export const updateOneCategoryController = async (
     next(err);
   }
 };
+
+export const deleteOneCategoryController = async (
+  req: Request<{}, {}, categoryModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { id } = req.body;
+
+    if (!id) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    await Category.destroy({
+      where: {
+        id,
+      },
+    });
+
+    res.status(200).json({
+      status: 200,
+      message: 'Delete successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
