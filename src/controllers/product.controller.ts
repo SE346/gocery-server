@@ -77,3 +77,36 @@ export const addOneProductController = async (
     next(err);
   }
 };
+
+export const deleteOneProductController = async (
+  req: Request<{}, {}, productModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { productId } = req.body;
+
+    if (!productId) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    await ProductImg.destroy({
+      where: {
+        productId,
+      },
+    });
+
+    await Product.destroy({
+      where: {
+        id: productId,
+      },
+    });
+
+    res.status(200).json({
+      status: 200,
+      message: 'Delete product successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
