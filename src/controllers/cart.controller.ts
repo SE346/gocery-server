@@ -81,3 +81,68 @@ export const addProductToCartController = async (
     next(err);
   }
 };
+
+export const removeProductInCartController = async (
+  req: Request<{}, {}, cartModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const { productId, quantity } = req.body;
+
+    if (!productId || !quantity) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    // Check if product is in cart?
+    const cartItem = await Cart.findOne({
+      where: {
+        userMail,
+        productId,
+      },
+    });
+
+    if (!cartItem) {
+      throw createError.BadRequest('Product is not in cart');
+    }
+
+    if (cartItem.quantity < quantity) {
+      throw createError.BadRequest(
+        'The number of quantity removed greater than the number available in cart'
+      );
+    }
+
+    if (cartItem.quantity === quantity) {
+      await Cart.destroy({
+        where: {
+          userMail,
+          productId,
+        },
+      });
+    }
+
+    if (cartItem.quantity > quantity) {
+      await Cart.update(
+        {
+          quantity: cartItem.quantity - quantity,
+        },
+        {
+          where: {
+            userMail,
+            productId,
+          },
+        }
+      );
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: 'Product removed cart',
+    });
+  } catch (err) {
+    next(err);
+  }
+};

@@ -2,6 +2,7 @@ import { Router } from 'express';
 import {
   getAllProductInCartController,
   addProductToCartController,
+  removeProductInCartController,
 } from '../controllers/cart.controller';
 import { verifyAccessToken } from '../utils/jwt_service';
 
@@ -12,5 +13,8 @@ router.get('/get-all', verifyAccessToken, getAllProductInCartController);
 
 // [POST] /cart/add -> Add product to cart
 router.post('/add', verifyAccessToken, addProductToCartController);
+
+// [POST] /cart/remove -> Remove product in cart
+router.post('/remove', verifyAccessToken, removeProductInCartController);
 
 export default router;
