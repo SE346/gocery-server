@@ -3,12 +3,17 @@ import createError from 'http-errors';
 import { Product, ProductImg } from '../models';
 import { v4 as uuid } from 'uuid';
 
+interface productImgAdded {
+  index: number;
+  imgUrl: string;
+}
+
 interface productModel {
   productId?: string;
   categoryId: string;
   name: string;
   description?: string;
-  imageList: string[];
+  imageList: productImgAdded[];
   price: number;
   discount: number;
   unit: string;
@@ -29,8 +34,8 @@ export const getAllProductBelongToCategoryController = async (
       where: {
         categoryId,
       },
+      include: [ProductImg],
       nest: true,
-      raw: true,
     });
 
     res.status(200).json({
@@ -62,9 +67,10 @@ export const addOneProductController = async (
       unit,
     });
 
-    const imageListMapping = imageList.map((curVal) => ({
+    const imageListMapping = imageList.map((imageListItem) => ({
       productId: newProductId,
-      imgUrl: curVal,
+      imgUrl: imageListItem.imgUrl,
+      index: imageListItem.index,
     }));
 
     await ProductImg.bulkCreate(imageListMapping);
@@ -72,6 +78,67 @@ export const addOneProductController = async (
     res.status(200).json({
       status: 200,
       message: 'Add product successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+// Replace
+export const updateOneProductController = async (
+  req: Request<{}, {}, productModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    const { productId, categoryId, name, description, imageList, price, discount, unit } = req.body;
+
+    // Check if product with id existing in the system
+    const productWithId = await Product.findOne({
+      where: {
+        id: productId,
+      },
+    });
+
+    if (!productWithId) {
+      throw createError.BadRequest('The product with this id does not exist in the system');
+    }
+
+    // Update product info
+    await Product.update(
+      {
+        categoryId,
+        productName: name,
+        productDescription: description,
+        price,
+        discount,
+        unit,
+      },
+      {
+        where: {
+          id: productId,
+        },
+      }
+    );
+
+    // Clear old product img & renew
+    await ProductImg.destroy({
+      where: {
+        productId,
+      },
+    });
+
+    const imageListMapping = imageList.map((imageListItem) => ({
+      productId,
+      imgUrl: imageListItem.imgUrl,
+      index: imageListItem.index,
+    }));
+
+    await ProductImg.bulkCreate(imageListMapping);
+
+    res.status(200).json({
+      status: 200,
+      message: 'Update product successfully',
     });
   } catch (err) {
     next(err);

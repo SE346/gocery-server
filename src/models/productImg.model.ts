@@ -31,6 +31,9 @@ class ProductImg extends Model {
   @Column({ type: DataType.TEXT, field: 'img_url' })
   imgUrl!: string;
 
+  @Column({ type: DataType.INTEGER, field: 'index' })
+  index!: number;
+
   @CreatedAt
   @Column({ type: DataType.DATE, field: 'created_at' })
   createdAt!: Date;

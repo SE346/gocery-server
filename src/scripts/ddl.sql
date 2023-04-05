@@ -111,6 +111,7 @@ CREATE TABLE product_img (
     product_img_id SERIAL PRIMARY KEY,
     product_id TEXT NOT NULL REFERENCES product(product_id),
     img_url TEXT NOT NULL DEFAULT 'https://placehold.co/200x200',
+    index INTEGER NOT NULL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
