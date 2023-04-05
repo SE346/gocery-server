@@ -55,3 +55,8 @@ insert into product_img(product_id, img_url, index) values ('#124', 'https://cdn
 insert into product_img(product_id, img_url, index) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-500gr-202303170948379636.jpg', 1);
 insert into product_img(product_id, img_url, index) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908085639.jpg', 2);
 insert into product_img(product_id, img_url, index) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg',3);
+
+
+-- Cart table
+insert into cart(product_id, user_mail, quantity) values ('#123', '20521366@gm.uit.edu.vn', 1);
+insert into cart(product_id, user_mail, quantity) values ('#124', '20521366@gm.uit.edu.vn', 2);

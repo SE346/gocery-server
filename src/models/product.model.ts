@@ -8,8 +8,9 @@ import {
   HasMany,
   ForeignKey,
   BelongsTo,
+  BelongsToMany,
 } from 'sequelize-typescript';
-import { Category, ProductImg } from '../models';
+import { Category, ProductImg, User, Cart } from '../models';
 
 @Table({ modelName: 'Product', tableName: 'product' })
 class Product extends Model {
@@ -19,6 +20,9 @@ class Product extends Model {
 
   @HasMany(() => ProductImg)
   productImgList!: ProductImg[];
+
+  @BelongsToMany(() => User, () => Cart)
+  user!: User;
 
   // Columns
   @Column({

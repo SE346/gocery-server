@@ -4,6 +4,7 @@ drop table users;
 drop table role;
 drop table rank;
 
+drop table cart;
 drop table product_img;
 drop table product;
 drop table category;

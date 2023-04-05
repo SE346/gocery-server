@@ -10,7 +10,7 @@ import {
   BeforeValidate,
   BeforeCreate,
 } from 'sequelize-typescript';
-import { Role, Rank, UserToRole, UserToRank } from './';
+import { Role, Rank, UserToRole, UserToRank, Product, Cart } from './';
 import bcrypt from 'bcrypt';
 
 @Table({ modelName: 'User', tableName: 'users' })
@@ -21,6 +21,9 @@ class User extends Model {
 
   @BelongsToMany(() => Rank, () => UserToRank)
   rank!: Rank;
+
+  @BelongsToMany(() => Product, () => Cart)
+  product!: Product;
 
   // Columns
   @Column({ type: DataType.STRING, primaryKey: true })

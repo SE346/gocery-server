@@ -119,3 +119,18 @@ CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON product_img
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE CART:
+CREATE TABLE cart (
+    user_mail TEXT NOT NULL REFERENCES users(mail),
+    product_id TEXT NOT NULL REFERENCES product(product_id),
+	quantity INTEGER NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (user_mail, product_id)
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON cart
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();

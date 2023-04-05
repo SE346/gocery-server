@@ -6,5 +6,6 @@ import UserToRank from './userToRank.model';
 import Category from './category.model';
 import ProductImg from './productImg.model';
 import Product from './product.model';
+import Cart from './cart.model';
 
-export { User, Role, Rank, UserToRole, UserToRank, Category, ProductImg, Product };
+export { User, Role, Rank, UserToRole, UserToRank, Category, ProductImg, Product, Cart };
