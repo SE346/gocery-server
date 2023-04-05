@@ -11,11 +11,11 @@ import { User, UserToRank } from './';
 
 @Table({ modelName: 'Rank', tableName: 'rank' })
 class Rank extends Model {
-  //Association
+  //Associations
   @BelongsToMany(() => User, () => UserToRank)
   users?: User[];
 
-  // Column
+  // Columns
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

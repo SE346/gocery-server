@@ -11,11 +11,11 @@ import { User, UserToRole } from './';
 
 @Table({ modelName: 'Role', tableName: 'role' })
 class Role extends Model {
-  // Association
+  // Associations
   @BelongsToMany(() => User, () => UserToRole)
   users?: User[];
 
-  // Column
+  // Columns
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,

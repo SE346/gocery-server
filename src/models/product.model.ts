@@ -13,7 +13,14 @@ import { Category, ProductImg } from '../models';
 
 @Table({ modelName: 'Product', tableName: 'product' })
 class Product extends Model {
-  // Column
+  // Associations
+  @BelongsTo(() => Category)
+  category!: Category;
+
+  @HasMany(() => ProductImg)
+  productImgList!: ProductImg[];
+
+  // Columns
   @Column({
     type: DataType.TEXT,
     primaryKey: true,
@@ -24,12 +31,6 @@ class Product extends Model {
   @ForeignKey(() => Category)
   @Column({ type: DataType.INTEGER, field: 'category_id' })
   categoryId!: number;
-
-  @BelongsTo(() => Category)
-  category!: Category;
-
-  @HasMany(() => ProductImg)
-  productImgList!: ProductImg[];
 
   @Column({ type: DataType.STRING, field: 'name' })
   productName!: string;

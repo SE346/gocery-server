@@ -12,7 +12,11 @@ import { Product } from '../models';
 
 @Table({ modelName: 'ProductImg', tableName: 'product_img' })
 class ProductImg extends Model {
-  // Column
+  // Associations
+  @BelongsTo(() => Product)
+  product!: Product;
+
+  // Columns
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -24,9 +28,6 @@ class ProductImg extends Model {
   @ForeignKey(() => Product)
   @Column({ type: DataType.TEXT, field: 'product_id' })
   productId!: string;
-
-  @BelongsTo(() => Product)
-  product!: Product;
 
   @Column({ type: DataType.TEXT, field: 'img_url' })
   imgUrl!: string;

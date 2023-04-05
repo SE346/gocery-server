@@ -11,7 +11,11 @@ import { Product } from '../models';
 
 @Table({ modelName: 'Category', tableName: 'category' })
 class Category extends Model {
-  // Column
+  // Associations
+  @HasMany(() => Product)
+  productList!: Product[];
+
+  // Columns
   @Column({
     type: DataType.INTEGER,
     primaryKey: true,
@@ -19,9 +23,6 @@ class Category extends Model {
     field: 'category_id',
   })
   id!: number;
-
-  @HasMany(() => Product)
-  productList!: Product[];
 
   @Column({ type: DataType.STRING, field: 'category_name' })
   categoryName!: string;

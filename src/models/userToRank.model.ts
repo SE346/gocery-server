@@ -11,7 +11,7 @@ import { User, Rank } from './';
 
 @Table({ modelName: 'UserToRank', tableName: 'user_to_rank' })
 class UserToRank extends Model {
-  // Association
+  // Columns
   @ForeignKey(() => User)
   @Column({ type: DataType.STRING, primaryKey: true, field: 'user_mail' })
   userMail!: string;
@@ -20,7 +20,6 @@ class UserToRank extends Model {
   @Column({ type: DataType.INTEGER, primaryKey: true, field: 'rank_id' })
   rankId!: number;
 
-  // Column
   @Column({ type: DataType.INTEGER, field: 'monney_acc_cur' })
   monneyAccCur!: number;
 

@@ -15,14 +15,14 @@ import bcrypt from 'bcrypt';
 
 @Table({ modelName: 'User', tableName: 'users' })
 class User extends Model {
-  // Association
+  // Associations
   @BelongsToMany(() => Role, () => UserToRole)
   role?: Role;
 
   @BelongsToMany(() => Rank, () => UserToRank)
   rank!: Rank;
 
-  // Column
+  // Columns
   @Column({ type: DataType.STRING, primaryKey: true })
   mail!: string;
 
