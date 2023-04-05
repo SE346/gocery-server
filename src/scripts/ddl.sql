@@ -134,3 +134,25 @@ CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON cart
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE ADDRESS:
+CREATE TABLE address (
+    address_id SERIAL PRIMARY KEY,
+    user_mail TEXT NOT NULL REFERENCES users(mail),
+    active BOOLEAN NOT NULL DEFAULT false,
+    name VARCHAR(255) NOT NULL,
+    province_id INTEGER NOT NULL,
+    province_name VARCHAR(255) NOT NULL,
+    district_id INTEGER NOT NULL,
+    district_name VARCHAR(255) NOT NULL,
+    ward_code VARCHAR(255) NOT NULL,
+    ward_name VARCHAR(255) NOT NULL,
+    detail VARCHAR(255) NOT NULL,
+    phone_num VARCHAR(10) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON address
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
