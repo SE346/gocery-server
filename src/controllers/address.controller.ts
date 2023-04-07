@@ -100,6 +100,76 @@ export const addNewAddressController = async (
   }
 };
 
+export const updateAddressController = async (
+  req: Request<{}, {}, addressModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const {
+      addressId,
+      name,
+      provinceId,
+      provinceName,
+      districtId,
+      districtName,
+      wardCode,
+      wardName,
+      detail,
+      phoneNum,
+      setAsPrimary,
+    } = req.body;
+
+    if (!addressId) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    // Disable all mail if setAsPrimary = true
+    if (setAsPrimary) {
+      await Address.update(
+        {
+          active: false,
+        },
+        {
+          where: {
+            userMail,
+          },
+        }
+      );
+    }
+
+    await Address.update(
+      {
+        name,
+        active: setAsPrimary || false,
+        provinceId,
+        provinceName,
+        districtId,
+        districtName,
+        wardCode,
+        wardName,
+        detail,
+        phoneNum,
+      },
+      {
+        where: {
+          id: addressId,
+        },
+      }
+    );
+
+    res.status(200).json({
+      status: 200,
+      message: 'Update address successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const removeAddressController = async (
   req: Request<{}, {}, addressModel>,
   res: Response,
