@@ -106,6 +106,14 @@ const verifyAccessToken = async (req: Request, res: Response, next: NextFunction
   });
 };
 
+// (Required) Previous Middleware: verifyAccessToken
+const verifyAdminAccessToken = (req: Request, res: Response, next: NextFunction) => {
+  if (res.locals.payload.user.role === 'Admin') next();
+  else {
+    return next(createError.Unauthorized('No permisson to access this resource'));
+  }
+};
+
 const verifyRefreshToken = (refreshToken: string): Promise<userPayload> => {
   return new Promise((resolve, reject) => {
     JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!, async (err, payload) => {
@@ -134,4 +142,10 @@ const verifyRefreshToken = (refreshToken: string): Promise<userPayload> => {
   });
 };
 
-export { signAccessToken, signRefreshToken, verifyAccessToken, verifyRefreshToken };
+export {
+  signAccessToken,
+  signRefreshToken,
+  verifyAccessToken,
+  verifyAdminAccessToken,
+  verifyRefreshToken,
+};
