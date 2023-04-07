@@ -13,6 +13,7 @@ interface addressModel {
   wardName: string;
   detail: string;
   phoneNum: string;
+  setAsPrimary: Boolean;
 }
 
 export const getAllAddressBelongToUserController = async (
@@ -59,11 +60,27 @@ export const addNewAddressController = async (
       wardName,
       detail,
       phoneNum,
+      setAsPrimary,
     } = req.body;
+
+    // Disable all mail if setAsPrimary = true
+    if (setAsPrimary) {
+      await Address.update(
+        {
+          active: false,
+        },
+        {
+          where: {
+            userMail,
+          },
+        }
+      );
+    }
 
     await Address.create({
       userMail,
       name,
+      active: setAsPrimary || false,
       provinceId,
       provinceName,
       districtId,
