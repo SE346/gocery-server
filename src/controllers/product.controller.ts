@@ -157,6 +157,17 @@ export const deleteOneProductController = async (
       throw createError.BadRequest('Missing params');
     }
 
+    const product = await Product.findOne({
+      where: {
+        id: productId,
+      },
+      raw: true,
+    });
+
+    if (!product) {
+      throw createError.Conflict('productId does not exists');
+    }
+
     await ProductImg.destroy({
       where: {
         productId,
