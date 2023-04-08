@@ -61,3 +61,37 @@ export const updateAvatarController = async (
     next(err);
   }
 };
+
+export const updateUserInfoController = async (
+  req: Request<{}, {}, userModel>,
+  res: Response,
+  next: NextFunction
+) => {
+  // Get userMail from previous middleware
+  const userMail = res.locals.payload.user.mail;
+
+  const { firstName, lastName, phoneNum, dateOfBirth } = req.body;
+
+  User.update(
+    {
+      firstName,
+      lastName,
+      phoneNum,
+      dateOfBirth,
+    },
+    {
+      where: {
+        mail: userMail,
+      },
+    }
+  );
+
+  try {
+    res.status(200).json({
+      status: 200,
+      message: 'Update user info successfully',
+    });
+  } catch (err) {
+    next(err);
+  }
+};
