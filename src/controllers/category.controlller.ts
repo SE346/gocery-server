@@ -1,5 +1,5 @@
-import { Request, Response, NextFunction } from 'express';
-import { Category } from '../models';
+import { Request, Response, NextFunction, raw } from 'express';
+import { Category, Product } from '../models';
 import createError from 'http-errors';
 
 interface categoryModel {
@@ -93,6 +93,28 @@ export const deleteOneCategoryController = async (
 
     if (!id) {
       throw createError.BadRequest('Missing params');
+    }
+
+    const category = await Category.findOne({
+      where: {
+        id,
+      },
+      raw: true,
+    });
+
+    if (!category) {
+      throw createError.BadRequest('categoryID does not exist');
+    }
+
+    const productListBelongToCategory = await Product.findAll({
+      where: {
+        categoryId: id,
+      },
+      raw: true,
+    });
+
+    if (productListBelongToCategory.length > 0) {
+      throw createError.Conflict('Category cannot be deleted because it still contains product');
     }
 
     await Category.destroy({
