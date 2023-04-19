@@ -5,8 +5,10 @@ import productRoute from './product.route';
 import cartRoute from './cart.route';
 import addressRoute from './address.route';
 import userRoute from './user.route';
+import apiDocsRoute from './api-docs.route';
 
 const route = (app: Express) => {
+  app.use('/api-docs', apiDocsRoute);
   app.use('/auth', authRoute);
   app.use('/category', categoryRoute);
   app.use('/product', productRoute);

@@ -15,10 +15,10 @@ router.post('/register', registerController);
 // [POST] /auth/login -> user login
 router.post('/login', loginController);
 
-// [DELETE] /auth/login -> user logout
+// [DELETE] /auth/logout -> user logout
 router.delete('/logout', verifyAccessToken, logoutController);
 
-// [POST] /auth/refresh-token
+// [POST] /auth/refresh-token -> Create new access token and refresh token
 router.post('/refresh-token', refreshTokenController);
 
 export default router;
