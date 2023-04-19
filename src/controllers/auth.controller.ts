@@ -8,7 +8,8 @@ import {
   verifyRefreshToken,
   userPayload,
 } from '../utils/jwt_service';
-import { removeKey, removeKeys } from '../utils/remove_key';
+import { removeKeys } from '../utils/remove_key';
+import { ResJSON } from '../utils/interface';
 
 interface registerModel {
   email: string;
@@ -25,7 +26,7 @@ interface loginModel {
 
 export const registerController = async (
   req: Request<{}, {}, registerModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -67,7 +68,7 @@ export const registerController = async (
     });
 
     res.status(201).json({
-      status: 201,
+      statusCode: 201,
       message: 'New account registration successful',
     });
   } catch (err) {
@@ -77,7 +78,7 @@ export const registerController = async (
 
 export const loginController = async (
   req: Request<{}, {}, loginModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -163,18 +164,24 @@ export const loginController = async (
     });
 
     res.status(201).json({
-      status: 201,
-      user: removeKeys(['password', 'rankId'], newUserObj),
-      accessToken,
-      refreshToken,
+      statusCode: 201,
       message: 'Login successfully',
+      data: {
+        user: removeKeys(['password', 'rankId'], newUserObj),
+        accessToken,
+        refreshToken,
+      },
     });
   } catch (err) {
     next(err);
   }
 };
 
-export const logoutController = async (req: Request, res: Response, next: NextFunction) => {
+export const logoutController = async (
+  req: Request,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
   try {
     // Take refresh token from cookie of user
     const { refreshToken } = req.cookies;
@@ -202,7 +209,7 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
       .catch((err) => next(createError.InternalServerError('Unable update RK in database')));
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Logout successfully',
     });
   } catch (err) {
@@ -210,7 +217,11 @@ export const logoutController = async (req: Request, res: Response, next: NextFu
   }
 };
 
-export const refreshTokenController = async (req: Request, res: Response, next: NextFunction) => {
+export const refreshTokenController = async (
+  req: Request,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
   try {
     // Take refresh token from cookie of user
     const { refreshToken } = req.cookies;
@@ -237,9 +248,12 @@ export const refreshTokenController = async (req: Request, res: Response, next: 
     });
 
     res.status(200).json({
-      status: 200,
-      accessToken,
-      refreshToken: refToken,
+      statusCode: 200,
+      message: 'Success',
+      data: {
+        accessToken,
+        refreshToken: refToken,
+      },
     });
   } catch (err) {
     next(err);

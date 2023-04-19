@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import { User } from '../models';
+import { ResJSON } from '../utils/interface';
 
 interface userModel {
   firstName: string;
@@ -10,7 +11,11 @@ interface userModel {
   dateOfBirth: Date;
 }
 
-export const getAllUserController = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllUserController = async (
+  req: Request,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
   try {
     const userList = await User.findAll({
       attributes: {
@@ -19,7 +24,8 @@ export const getAllUserController = async (req: Request, res: Response, next: Ne
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
+      message: 'Success',
       data: userList,
     });
   } catch (err) {
@@ -29,7 +35,7 @@ export const getAllUserController = async (req: Request, res: Response, next: Ne
 
 export const updateAvatarController = async (
   req: Request<{}, {}, userModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -54,8 +60,8 @@ export const updateAvatarController = async (
     );
 
     res.status(200).json({
-      status: 200,
-      message: 'Update avatar successfully',
+      statusCode: 200,
+      message: 'Success',
     });
   } catch (err) {
     next(err);
@@ -64,7 +70,7 @@ export const updateAvatarController = async (
 
 export const updateUserInfoController = async (
   req: Request<{}, {}, userModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   // Get userMail from previous middleware
@@ -88,8 +94,15 @@ export const updateUserInfoController = async (
 
   try {
     res.status(200).json({
-      status: 200,
-      message: 'Update user info successfully',
+      statusCode: 200,
+      message: 'Success',
+      data: {
+        email: userMail,
+        firstName,
+        lastName,
+        phoneNum,
+        dateOfBirth,
+      },
     });
   } catch (err) {
     next(err);

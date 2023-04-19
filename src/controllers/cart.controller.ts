@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import { Cart } from '../models';
+import { ResJSON } from '../utils/interface';
 
 interface cartModel {
   productId: string;
@@ -9,7 +10,7 @@ interface cartModel {
 
 export const getAllProductInCartController = async (
   req: Request,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -24,7 +25,8 @@ export const getAllProductInCartController = async (
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
+      message: 'Success',
       data: cartList,
     });
   } catch (err) {
@@ -34,7 +36,7 @@ export const getAllProductInCartController = async (
 
 export const addProductToCartController = async (
   req: Request<{}, {}, cartModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -74,7 +76,7 @@ export const addProductToCartController = async (
     }
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Product added cart',
     });
   } catch (err) {
@@ -84,7 +86,7 @@ export const addProductToCartController = async (
 
 export const removeProductInCartController = async (
   req: Request<{}, {}, cartModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -139,7 +141,7 @@ export const removeProductInCartController = async (
     }
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Product removed cart',
     });
   } catch (err) {

@@ -13,15 +13,15 @@ const router: Router = Router();
 // [GET] /category/get-all -> Get all category
 router.get('/get-all', getAllCategoryController);
 
-// [POST] /category/add-one -> Add one categort
-router.post('/add-one', verifyAccessToken, verifyAdminAccessToken, addOneCategoryController);
+// [POST] /category/add -> Add new category
+router.post('/add', verifyAccessToken, verifyAdminAccessToken, addOneCategoryController);
 
-// [POST] /category/update-one -> Update one category
-router.post('/update-one', verifyAccessToken, verifyAdminAccessToken, updateOneCategoryController);
+// [POST] /category/{categoryId} -> Update one category
+router.post('/:categoryId', verifyAccessToken, verifyAdminAccessToken, updateOneCategoryController);
 
-// [DELETE] /category/delete-one -> Delete one category
+// [DELETE] /category/{categoryId} -> Delete one category
 router.delete(
-  '/delete-one',
+  '/:categoryId',
   verifyAccessToken,
   verifyAdminAccessToken,
   deleteOneCategoryController

@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import { Product, ProductImg } from '../models';
 import { v4 as uuid } from 'uuid';
+import { ResJSON } from '../utils/interface';
 
 interface productImgAdded {
   index: number;
@@ -21,7 +22,7 @@ interface productModel {
 
 export const getAllProductBelongToCategoryController = async (
   req: Request,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -39,7 +40,8 @@ export const getAllProductBelongToCategoryController = async (
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
+      message: 'Success',
       data: productList,
     });
   } catch (err) {
@@ -49,7 +51,7 @@ export const getAllProductBelongToCategoryController = async (
 
 export const addOneProductController = async (
   req: Request<{}, {}, productModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -57,7 +59,7 @@ export const addOneProductController = async (
 
     const newProductId = uuid();
 
-    await Product.create({
+    const createdProduct = await Product.create({
       id: newProductId,
       categoryId,
       productName: name,
@@ -73,11 +75,15 @@ export const addOneProductController = async (
       index: imageListItem.index,
     }));
 
-    await ProductImg.bulkCreate(imageListMapping);
+    const createdProductImgList = await ProductImg.bulkCreate(imageListMapping);
 
-    res.status(200).json({
-      status: 200,
+    res.status(201).json({
+      statusCode: 201,
       message: 'Add product successfully',
+      data: {
+        ...createdProduct.dataValues,
+        productImgList: createdProductImgList,
+      },
     });
   } catch (err) {
     next(err);
@@ -86,12 +92,13 @@ export const addOneProductController = async (
 
 // Replace
 export const updateOneProductController = async (
-  req: Request<{}, {}, productModel>,
-  res: Response,
+  req: Request<{ productId: string }, {}, productModel>,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    const { productId, categoryId, name, description, imageList, price, discount, unit } = req.body;
+    const { productId } = req.params;
+    const { categoryId, name, description, imageList, price, discount, unit } = req.body;
 
     // Check if product with id existing in the system
     const productWithId = await Product.findOne({
@@ -105,7 +112,7 @@ export const updateOneProductController = async (
     }
 
     // Update product info
-    await Product.update(
+    const [_, updatedProduct] = await Product.update(
       {
         categoryId,
         productName: name,
@@ -118,6 +125,7 @@ export const updateOneProductController = async (
         where: {
           id: productId,
         },
+        returning: true,
       }
     );
 
@@ -133,12 +141,15 @@ export const updateOneProductController = async (
       imgUrl: imageListItem.imgUrl,
       index: imageListItem.index,
     }));
-
-    await ProductImg.bulkCreate(imageListMapping);
+    const createdProductImgList = await ProductImg.bulkCreate(imageListMapping);
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Update product successfully',
+      data: {
+        ...updatedProduct[0].dataValues,
+        productImgList: createdProductImgList,
+      },
     });
   } catch (err) {
     next(err);
@@ -146,12 +157,12 @@ export const updateOneProductController = async (
 };
 
 export const deleteOneProductController = async (
-  req: Request<{}, {}, productModel>,
-  res: Response,
+  req: Request<{ productId: string }, {}, productModel>,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    const { productId } = req.body;
+    const { productId } = req.params;
 
     if (!productId) {
       throw createError.BadRequest('Missing params');
@@ -181,7 +192,7 @@ export const deleteOneProductController = async (
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Delete product successfully',
     });
   } catch (err) {

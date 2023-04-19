@@ -15,10 +15,10 @@ router.get('/get-all', verifyAccessToken, getAllAddressBelongToUserController);
 // [POST] /address/add -> Create new address
 router.post('/add', verifyAccessToken, addNewAddressController);
 
-// [POST] /address/update -> Update address
-router.post('/update', verifyAccessToken, updateAddressController);
+// [POST] /address/{addressId} -> Update address
+router.post('/:addressId', verifyAccessToken, updateAddressController);
 
-// [DELETE] /address/remove -> Remove one address
-router.delete('/remove', verifyAccessToken, removeAddressController);
+// [DELETE] /address/{addressId} -> Remove one address
+router.delete('/:addressId', verifyAccessToken, removeAddressController);
 
 export default router;

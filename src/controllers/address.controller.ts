@@ -1,6 +1,7 @@
-import { Request, Response, NextFunction, raw } from 'express';
+import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import { Address } from '../models';
+import { ResJSON } from '../utils/interface';
 
 interface addressModel {
   addressId: number;
@@ -18,7 +19,7 @@ interface addressModel {
 
 export const getAllAddressBelongToUserController = async (
   req: Request,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -33,7 +34,8 @@ export const getAllAddressBelongToUserController = async (
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
+      message: 'Success',
       data: addressList,
     });
   } catch (err) {
@@ -43,7 +45,7 @@ export const getAllAddressBelongToUserController = async (
 
 export const addNewAddressController = async (
   req: Request<{}, {}, addressModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -77,7 +79,7 @@ export const addNewAddressController = async (
       );
     }
 
-    await Address.create({
+    const newAddress = await Address.create({
       userMail,
       name,
       active: setAsPrimary || false,
@@ -91,9 +93,10 @@ export const addNewAddressController = async (
       phoneNum,
     });
 
-    res.status(200).json({
-      status: 200,
+    res.status(201).json({
+      statusCode: 201,
       message: 'Add new address successfully',
+      data: newAddress,
     });
   } catch (err) {
     next(err);
@@ -101,16 +104,19 @@ export const addNewAddressController = async (
 };
 
 export const updateAddressController = async (
-  req: Request<{}, {}, addressModel>,
-  res: Response,
+  req: Request<{ addressId: string }, {}, addressModel>,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
     // Get userMail from previous middleware
     const userMail = res.locals.payload.user.mail;
 
+    // Get id & convert to number
+    const { addressId: unconvertAddrId } = req.params;
+    const addressId: number = +unconvertAddrId;
+
     const {
-      addressId,
       name,
       provinceId,
       provinceName,
@@ -141,7 +147,7 @@ export const updateAddressController = async (
       );
     }
 
-    await Address.update(
+    const [_, updatedAddress] = await Address.update(
       {
         name,
         active: setAsPrimary || false,
@@ -158,12 +164,14 @@ export const updateAddressController = async (
         where: {
           id: addressId,
         },
+        returning: true,
       }
     );
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Update address successfully',
+      data: updatedAddress,
     });
   } catch (err) {
     next(err);
@@ -171,12 +179,14 @@ export const updateAddressController = async (
 };
 
 export const removeAddressController = async (
-  req: Request<{}, {}, addressModel>,
-  res: Response,
+  req: Request<{ addressId: string }, {}, addressModel>,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    const { addressId } = req.body;
+    // Get id & convert to number
+    const { addressId: unconvertAddrId } = req.params;
+    const addressId: number = +unconvertAddrId;
 
     if (!addressId) {
       throw createError.BadRequest('Missing params');
@@ -205,7 +215,7 @@ export const removeAddressController = async (
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Remove address successfully',
     });
   } catch (err) {

@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction, raw } from 'express';
 import { Category, Product } from '../models';
 import createError from 'http-errors';
+import { ResJSON } from '../utils/interface';
 
 interface categoryModel {
   id: number;
@@ -8,15 +9,18 @@ interface categoryModel {
   categoryImage: string;
 }
 
-export const getAllCategoryController = async (req: Request, res: Response, next: NextFunction) => {
+export const getAllCategoryController = async (
+  req: Request,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
   try {
     const categoryList = await Category.findAll({});
 
     res.status(200).json({
-      status: 200,
-      data: {
-        categoryList,
-      },
+      statusCode: 200,
+      message: 'Success',
+      data: categoryList,
     });
   } catch (err) {
     next(err);
@@ -25,7 +29,7 @@ export const getAllCategoryController = async (req: Request, res: Response, next
 
 export const addOneCategoryController = async (
   req: Request<{}, {}, categoryModel>,
-  res: Response,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
@@ -35,14 +39,15 @@ export const addOneCategoryController = async (
       throw createError.BadRequest('Missing params');
     }
 
-    await Category.create({
+    const newCategory = await Category.create({
       categoryName,
       categoryImage,
     });
 
-    res.json({
-      status: 200,
+    res.status(201).json({
+      statusCode: 201,
       message: 'Add a category successfully',
+      data: newCategory,
     });
   } catch (err) {
     next(err);
@@ -50,33 +55,38 @@ export const addOneCategoryController = async (
 };
 
 export const updateOneCategoryController = async (
-  req: Request<{}, {}, categoryModel>,
-  res: Response,
+  req: Request<{ categoryId: string }, {}, categoryModel>,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    const { id, categoryName, categoryImage } = req.body;
+    const { categoryId: unconvertCateId } = req.params;
+    const categoryId: number = +unconvertCateId;
+
+    const { categoryName, categoryImage } = req.body;
 
     // Check missing param
-    if (!id || !categoryName || !categoryImage) {
+    if (!categoryId || !categoryName || !categoryImage) {
       throw createError.BadRequest('Missing params');
     }
 
-    await Category.update(
+    const [_, updatedCategory] = await Category.update(
       {
         categoryName,
         categoryImage,
       },
       {
         where: {
-          id,
+          id: categoryId,
         },
+        returning: true,
       }
     );
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Update category successfully',
+      data: updatedCategory,
     });
   } catch (err) {
     next(err);
@@ -84,20 +94,21 @@ export const updateOneCategoryController = async (
 };
 
 export const deleteOneCategoryController = async (
-  req: Request<{}, {}, categoryModel>,
-  res: Response,
+  req: Request<{ categoryId: string }>,
+  res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    const { id } = req.body;
+    const { categoryId: unconvertCateId } = req.params;
+    const categoryId: number = +unconvertCateId;
 
-    if (!id) {
+    if (!categoryId) {
       throw createError.BadRequest('Missing params');
     }
 
     const category = await Category.findOne({
       where: {
-        id,
+        id: categoryId,
       },
       raw: true,
     });
@@ -108,7 +119,7 @@ export const deleteOneCategoryController = async (
 
     const productListBelongToCategory = await Product.findAll({
       where: {
-        categoryId: id,
+        categoryId,
       },
       raw: true,
     });
@@ -119,12 +130,12 @@ export const deleteOneCategoryController = async (
 
     await Category.destroy({
       where: {
-        id,
+        id: categoryId,
       },
     });
 
     res.status(200).json({
-      status: 200,
+      statusCode: 200,
       message: 'Delete successfully',
     });
   } catch (err) {

@@ -21,10 +21,10 @@ router.get(
 // [POST] /product/add-one -> Add one product
 router.post('/add-one', verifyAccessToken, verifyAdminAccessToken, addOneProductController);
 
-// [POST] /product/update-one -> Update one product
-router.post('/update-one', verifyAccessToken, verifyAdminAccessToken, updateOneProductController);
+// [POST] /product/{productId} -> Update one product
+router.post('/:productId', verifyAccessToken, verifyAdminAccessToken, updateOneProductController);
 
-// [DELETE] /product/delete-one -> Delete one product
-router.delete('/delete-one', verifyAccessToken, verifyAdminAccessToken, deleteOneProductController);
+// [DELETE] /product/{productId} -> Delete one product
+router.delete('/:productId', verifyAccessToken, verifyAdminAccessToken, deleteOneProductController);
 
 export default router;
