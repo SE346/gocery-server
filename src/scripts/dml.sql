@@ -36,9 +36,9 @@ insert into category(category_name, category_image) values ('Frozen', 'https://p
 insert into category(category_name, category_image) values ('Organic', 'https://placehold.co/400x400');
 
 -- Product table
-insert into product(product_id, category_id, name, description, price, discount, unit) values ('#123', 1, 'Xà lách búp mỡ thuỷ canh từ 200g', '', 17, 29, 'pack');
-insert into product(product_id, category_id, name, description, price, discount, unit) values ('#124', 1, 'Rau má đất 150g', '', 15, 0, 'pack');
-insert into product(product_id, category_id, name, description, price, discount, unit) values ('#125', 2, 'Đùi bò nhập khẩu đông lạnh 500gr', '', 109, 15, 'pack');
+insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#123', 1, 'Xà lách búp mỡ thuỷ canh từ 200g', 10, '', 17, 29, 'pack');
+insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#124', 1, 'Rau má đất 150g', 5, '', 15, 0, 'pack');
+insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#125', 2, 'Đùi bò nhập khẩu đông lạnh 500gr', 7, '', 109, 15, 'pack');
 
 
 -- ProductImg table

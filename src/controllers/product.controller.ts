@@ -13,6 +13,7 @@ interface productModel {
   productId?: string;
   categoryId: string;
   name: string;
+  quantity: number;
   description?: string;
   imageList: productImgAdded[];
   price: number;
@@ -21,15 +22,17 @@ interface productModel {
 }
 
 export const getAllProductBelongToCategoryController = async (
-  req: Request,
+  req: Request<{ categoryId: string }>,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    const { categoryId } = req.body;
-    if (!categoryId) {
+    const { categoryId: unconvertCateId } = req.params;
+    if (!unconvertCateId) {
       throw createError.BadRequest('Missing param');
     }
+
+    const categoryId: number = +unconvertCateId;
 
     const productList = await Product.findAll({
       where: {
@@ -55,7 +58,7 @@ export const addOneProductController = async (
   next: NextFunction
 ) => {
   try {
-    const { categoryId, name, description, imageList, price, discount, unit } = req.body;
+    const { categoryId, name, quantity, description, imageList, price, discount, unit } = req.body;
 
     const newProductId = uuid();
 
@@ -63,6 +66,7 @@ export const addOneProductController = async (
       id: newProductId,
       categoryId,
       productName: name,
+      quantity,
       productDescription: description,
       price,
       discount,
@@ -98,7 +102,7 @@ export const updateOneProductController = async (
 ) => {
   try {
     const { productId } = req.params;
-    const { categoryId, name, description, imageList, price, discount, unit } = req.body;
+    const { categoryId, name, quantity, description, imageList, price, discount, unit } = req.body;
 
     // Check if product with id existing in the system
     const productWithId = await Product.findOne({
@@ -116,6 +120,7 @@ export const updateOneProductController = async (
       {
         categoryId,
         productName: name,
+        quantity,
         productDescription: description,
         price,
         discount,

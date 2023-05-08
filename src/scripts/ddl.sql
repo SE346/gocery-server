@@ -94,6 +94,7 @@ CREATE TABLE product (
     product_id TEXT PRIMARY KEY,
     category_id INTEGER NOT NULL REFERENCES category(category_id),
     name VARCHAR(255) NOT NULL,
+    quantity INTEGER NOT NULL DEFAULT 0,
     description TEXT,
     price INTEGER NOT NULL DEFAULT 0,
     discount INTEGER NOT NULL DEFAULT 0,

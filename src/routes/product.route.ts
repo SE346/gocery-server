@@ -12,7 +12,7 @@ const router: Router = Router();
 
 // [GET] /product/get-product-of-category -> Get all product belong to a category
 router.get(
-  '/get-product-of-category',
+  '/get-product-of-category/:categoryId',
   verifyAccessToken,
   verifyAdminAccessToken,
   getAllProductBelongToCategoryController

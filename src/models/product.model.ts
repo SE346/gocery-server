@@ -39,6 +39,9 @@ class Product extends Model {
   @Column({ type: DataType.STRING, field: 'name' })
   productName!: string;
 
+  @Column({ type: DataType.INTEGER, field: 'quantity' })
+  quantity!: number;
+
   @Column({ type: DataType.TEXT, field: 'description' })
   productDescription?: string;
 
