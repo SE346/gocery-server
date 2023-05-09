@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { Product, Comment } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
+import { IPayload } from '../utils/jwt_service';
 
 export const getAllCommentBelongToProductController = async (
   req: Request<{ productId: string }>,
@@ -51,6 +52,45 @@ export const getSingleCommentByIdController = async (
       statusCode: 200,
       message: 'Success',
       data: comment,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const addCommentController = async (
+  req: Request<{}, {}, Comment>,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const { productId, content } = req.body;
+
+    if (!productId || !content) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    // Check product exist
+    const product = await Product.findByPk(productId);
+
+    if (!product) {
+      throw createError.Conflict('Product with id not exist');
+    }
+
+    // Create new comment
+    const createdComment = await Comment.create({
+      productId,
+      userMail,
+      content,
+    });
+
+    res.status(201).json({
+      statusCode: 201,
+      message: 'Added successfully',
+      data: createdComment,
     });
   } catch (err) {
     next(err);

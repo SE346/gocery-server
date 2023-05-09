@@ -3,6 +3,7 @@ import { verifyAccessToken, verifyAdminAccessToken } from '../utils/jwt_service'
 import {
   getAllCommentBelongToProductController,
   getSingleCommentByIdController,
+  addCommentController,
 } from '../controllers/comment.controller';
 
 const router: Router = Router();
@@ -12,5 +13,8 @@ router.get('/p/:productId', verifyAccessToken, getAllCommentBelongToProductContr
 
 // [GET] /comment/{commentId} -> Get single comment by id
 router.get('/:commentId', verifyAccessToken, getSingleCommentByIdController);
+
+// [POST] /comment -> Create new comment
+router.post('/', verifyAccessToken, addCommentController);
 
 export default router;

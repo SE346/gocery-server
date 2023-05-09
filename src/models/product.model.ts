@@ -33,7 +33,7 @@ class Product extends Model {
     primaryKey: true,
     field: 'product_id',
   })
-  id!: number;
+  id!: string;
 
   @ForeignKey(() => Category)
   @Column({ type: DataType.INTEGER, field: 'category_id' })
