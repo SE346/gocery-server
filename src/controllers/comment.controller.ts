@@ -96,3 +96,49 @@ export const addCommentController = async (
     next(err);
   }
 };
+
+export const updateCommentController = async (
+  req: Request<{ commentId: string }, {}, Comment>,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const { commentId: unconvertCommentId } = req.params;
+    const commentId: number = +unconvertCommentId;
+
+    const { content } = req.body;
+
+    const comment = await Comment.findByPk(commentId);
+
+    if (!comment) {
+      throw createError.Conflict('Comment with id not exist');
+    }
+
+    if (comment.userMail !== userMail) {
+      throw createError.Unauthorized('Unable to edit this comment');
+    }
+
+    const [_, updatedComment] = await Comment.update(
+      {
+        content,
+      },
+      {
+        where: {
+          id: commentId,
+        },
+        returning: true,
+      }
+    );
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Updated successfully',
+      data: updatedComment[0].dataValues,
+    });
+  } catch (err) {
+    next(err);
+  }
+};

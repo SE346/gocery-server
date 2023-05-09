@@ -4,6 +4,7 @@ import {
   getAllCommentBelongToProductController,
   getSingleCommentByIdController,
   addCommentController,
+  updateCommentController,
 } from '../controllers/comment.controller';
 
 const router: Router = Router();
@@ -16,5 +17,8 @@ router.get('/:commentId', verifyAccessToken, getSingleCommentByIdController);
 
 // [POST] /comment -> Create new comment
 router.post('/', verifyAccessToken, addCommentController);
+
+// [PUT] /comment/{commentId} -> Update comment by id
+router.put('/:commentId', verifyAccessToken, updateCommentController);
 
 export default router;
