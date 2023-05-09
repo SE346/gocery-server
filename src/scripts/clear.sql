@@ -1,4 +1,5 @@
 drop table address;
+drop table comment;
 drop table cart;
 drop table product_img;
 drop table product;

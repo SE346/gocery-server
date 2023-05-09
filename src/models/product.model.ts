@@ -10,7 +10,7 @@ import {
   BelongsTo,
   BelongsToMany,
 } from 'sequelize-typescript';
-import { Category, ProductImg, User, Cart } from '../models';
+import { Category, ProductImg, User, Cart, Comment } from '../models';
 
 @Table({ modelName: 'Product', tableName: 'product' })
 class Product extends Model {
@@ -23,6 +23,9 @@ class Product extends Model {
 
   @BelongsToMany(() => User, () => Cart)
   user!: User;
+
+  @BelongsToMany(() => User, () => Comment)
+  userList!: User[];
 
   // Columns
   @Column({

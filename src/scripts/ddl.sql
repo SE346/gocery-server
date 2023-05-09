@@ -136,6 +136,20 @@ ON cart
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
 
+-- CREATE TABLE COMMENT:
+CREATE TABLE comment (
+    comment_id SERIAL PRIMARY KEY,
+    user_mail TEXT NOT NULL REFERENCES users(mail),
+    product_id TEXT NOT NULL REFERENCES product(product_id),
+	content TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON comment
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
+
 -- CREATE TABLE ADDRESS:
 CREATE TABLE address (
     address_id SERIAL PRIMARY KEY,
