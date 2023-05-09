@@ -3,16 +3,20 @@ import createError from 'http-errors';
 import { User } from '../models';
 import { Request, Response, NextFunction } from 'express';
 
-export interface userPayload extends JwtPayload {
+export interface userPayload {
   mail: string;
   role?: string;
+}
+
+export interface IPayload extends JwtPayload {
+  user: userPayload;
 }
 
 // Create Access Token
 const signAccessToken = async (user: userPayload) => {
   return new Promise((resolve, reject) => {
     // Payload
-    const payload = {
+    const payload: IPayload = {
       user,
     };
 
@@ -41,7 +45,7 @@ const signAccessToken = async (user: userPayload) => {
 const signRefreshToken = async (user: userPayload) => {
   return new Promise((resolve, reject) => {
     // Payload
-    const payload = {
+    const payload: IPayload = {
       user,
     };
 
@@ -114,7 +118,7 @@ const verifyAdminAccessToken = (req: Request, res: Response, next: NextFunction)
   }
 };
 
-const verifyRefreshToken = (refreshToken: string): Promise<userPayload> => {
+const verifyRefreshToken = (refreshToken: string): Promise<IPayload> => {
   return new Promise((resolve, reject) => {
     JWT.verify(refreshToken, process.env.REFRESH_TOKEN_SECRET!, async (err, payload) => {
       if (err) {
@@ -127,7 +131,7 @@ const verifyRefreshToken = (refreshToken: string): Promise<userPayload> => {
       // Get refresh token from db
       const user = await User.findOne({
         where: {
-          mail: <userPayload>payload.user.mail,
+          mail: <IPayload>payload.user.mail,
         },
         raw: true,
         nest: true,
@@ -137,7 +141,7 @@ const verifyRefreshToken = (refreshToken: string): Promise<userPayload> => {
         reject(createError.Unauthorized('Invalid refresh token'));
       }
 
-      resolve(<userPayload>payload);
+      resolve(<IPayload>payload);
     });
   });
 };
