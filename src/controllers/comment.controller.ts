@@ -38,16 +38,16 @@ export const getSingleCommentByIdController = async (
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
-  const { commentId: unconvertCommentId } = req.params;
-  const commentId: number = +unconvertCommentId;
-
-  const comment = await Comment.findByPk(commentId);
-
-  if (!comment) {
-    throw createError.NotFound('Comment with id not found');
-  }
-
   try {
+    const { commentId: unconvertCommentId } = req.params;
+    const commentId: number = +unconvertCommentId;
+
+    const comment = await Comment.findByPk(commentId);
+
+    if (!comment) {
+      throw createError.NotFound('Comment with id not found');
+    }
+
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
@@ -137,6 +137,43 @@ export const updateCommentController = async (
       statusCode: 200,
       message: 'Updated successfully',
       data: updatedComment[0].dataValues,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const removeCommentController = async (
+  req: Request<{ commentId: string }>,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const { commentId: unconvertCommentId } = req.params;
+    const commentId: number = +unconvertCommentId;
+
+    const comment = await Comment.findByPk(commentId);
+
+    if (!comment) {
+      throw createError.Conflict('Comment with id not exist');
+    }
+
+    if (comment.userMail !== userMail) {
+      throw createError.Unauthorized('Unable to delete this comment');
+    }
+
+    await Comment.destroy({
+      where: {
+        id: commentId,
+      },
+    });
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Deleted successfully',
     });
   } catch (err) {
     next(err);

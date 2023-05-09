@@ -1,10 +1,11 @@
 import { Router } from 'express';
-import { verifyAccessToken, verifyAdminAccessToken } from '../utils/jwt_service';
+import { verifyAccessToken } from '../utils/jwt_service';
 import {
   getAllCommentBelongToProductController,
   getSingleCommentByIdController,
   addCommentController,
   updateCommentController,
+  removeCommentController,
 } from '../controllers/comment.controller';
 
 const router: Router = Router();
@@ -20,5 +21,8 @@ router.post('/', verifyAccessToken, addCommentController);
 
 // [PUT] /comment/{commentId} -> Update comment by id
 router.put('/:commentId', verifyAccessToken, updateCommentController);
+
+// [DELETE] /comment/{commentId} -> Delete comment by id
+router.delete('/:commentId', verifyAccessToken, removeCommentController);
 
 export default router;
