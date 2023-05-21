@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
 import { User } from '../models';
 import { ResJSON } from '../utils/interface';
+import { IPayload } from '../utils/jwt_service';
 
 interface userModel {
   firstName: string;
@@ -27,6 +28,35 @@ export const getAllUserController = async (
       statusCode: 200,
       message: 'Success',
       data: userList,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export const getUserInfoController = async (
+  req: Request,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const userInfo = await User.findByPk(userMail, {
+      attributes: {
+        exclude: ['userMail', 'password', 'refreshToken', 'createdAt', 'updatedAt'],
+      },
+    });
+
+    if (!userInfo) {
+      throw createError.InternalServerError('Something wrong with database');
+    }
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: userInfo,
     });
   } catch (err) {
     next(err);
