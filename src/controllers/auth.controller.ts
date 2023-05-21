@@ -155,13 +155,13 @@ export const loginController = async (
     const refreshToken = await signRefreshToken(payload);
 
     // Store refresh token in cookie
-    res.cookie('refreshToken', refreshToken, {
-      httpOnly: true,
-      secure: false,
-      path: '/',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 3600 * 1000,
-    });
+    // res.cookie('refreshToken', refreshToken, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   path: '/',
+    //   sameSite: 'strict',
+    //   maxAge: 60 * 60 * 24 * 3600 * 1000,
+    // });
 
     res.status(201).json({
       statusCode: 201,
@@ -178,17 +178,17 @@ export const loginController = async (
 };
 
 export const logoutController = async (
-  req: Request,
+  req: Request<{}, {}, User>,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    // Take refresh token from cookie of user
-    const { refreshToken } = req.cookies;
+    // Take refresh token from req.body of user
+    const { refreshToken } = req.body;
 
     // Check refresh token exists
     if (!refreshToken) {
-      return next(createError.BadRequest('No refresh token in cookies'));
+      return next(createError.Unauthorized('No refresh token in body'));
     }
 
     // Verify refreshToken
@@ -204,9 +204,9 @@ export const logoutController = async (
           mail: user.mail,
         },
       }
-    )
-      .then(() => res.clearCookie('refreshToken'))
-      .catch((err) => next(createError.InternalServerError('Unable update RK in database')));
+    );
+    // .then(() => res.clearCookie('refreshToken'))
+    // .catch((err) => next(createError.InternalServerError('Unable update RK in database')));
 
     res.status(200).json({
       statusCode: 200,
@@ -218,17 +218,17 @@ export const logoutController = async (
 };
 
 export const refreshTokenController = async (
-  req: Request,
+  req: Request<{}, {}, User>,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
   try {
-    // Take refresh token from cookie of user
-    const { refreshToken } = req.cookies;
+    // Take refresh token from req.body
+    const { refreshToken } = req.body;
 
     // Check refresh token exists
     if (!refreshToken) {
-      return next(createError.BadRequest('No refresh token in cookies'));
+      return next(createError.Unauthorized('No refresh token in body'));
     }
 
     // Check proper user
@@ -239,13 +239,13 @@ export const refreshTokenController = async (
     const refToken = await signRefreshToken(user);
 
     // Store refresh token in cookie
-    res.cookie('refreshToken', refToken, {
-      httpOnly: true,
-      secure: false,
-      path: '/',
-      sameSite: 'strict',
-      maxAge: 60 * 60 * 24 * 3600 * 1000,
-    });
+    // res.cookie('refreshToken', refToken, {
+    //   httpOnly: true,
+    //   secure: false,
+    //   path: '/',
+    //   sameSite: 'strict',
+    //   maxAge: 60 * 60 * 24 * 3600 * 1000,
+    // });
 
     res.status(200).json({
       statusCode: 200,
