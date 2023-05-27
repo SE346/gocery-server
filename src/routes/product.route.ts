@@ -14,7 +14,6 @@ const router: Router = Router();
 router.get(
   '/get-product-of-category/:categoryId',
   verifyAccessToken,
-  verifyAdminAccessToken,
   getAllProductBelongToCategoryController
 );
 
