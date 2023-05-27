@@ -24,7 +24,7 @@ class User extends Model {
   rank!: Rank;
 
   @BelongsToMany(() => Product, () => Cart)
-  product!: Product;
+  cartList!: Product[];
 
   @BelongsToMany(() => Product, () => Comment)
   productList!: Product[];

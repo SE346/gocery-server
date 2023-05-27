@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import createError from 'http-errors';
-import { Cart } from '../models';
+import { Cart, Product, ProductImg, User } from '../models';
 import { ResJSON } from '../utils/interface';
 
 interface cartModel {
@@ -17,17 +17,41 @@ export const getAllProductInCartController = async (
     // Get userMail from previous middleware
     const userMail = res.locals.payload.user.mail;
 
-    const cartList = await Cart.findAll({
-      attributes: { exclude: ['userMail', 'createdAt', 'updatedAt'] },
+    const cartListUser = await User.findOne({
       where: {
-        userMail,
+        mail: userMail,
       },
+      include: [
+        {
+          model: Product,
+          through: {
+            as: 'cart',
+            attributes: ['quantity'],
+          },
+          include: [
+            {
+              model: ProductImg,
+              attributes: {
+                exclude: ['productId', 'createdAt', 'updatedAt'],
+              },
+            },
+          ],
+          attributes: {
+            exclude: ['quantity', 'createdAt', 'updatedAt'],
+          },
+          as: 'cartList',
+        },
+      ],
     });
+
+    if (!cartListUser) {
+      throw createError.InternalServerError('User not found');
+    }
 
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
-      data: cartList,
+      data: cartListUser.cartList,
     });
   } catch (err) {
     next(err);
