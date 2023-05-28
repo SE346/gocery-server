@@ -6,7 +6,7 @@ import {
   UpdatedAt,
   DataType,
   ForeignKey,
-  BelongsToMany,
+  HasMany,
 } from 'sequelize-typescript';
 import { User, Address, Product, OrderDetail } from './';
 import { UUID } from 'sequelize';
@@ -14,8 +14,8 @@ import { UUID } from 'sequelize';
 @Table({ modelName: 'Order', tableName: 'order' })
 class Order extends Model {
   // Associations
-  @BelongsToMany(() => Product, () => OrderDetail)
-  productList!: Product[];
+  @HasMany(() => OrderDetail)
+  orderDetailList!: OrderDetail[];
 
   // Columns
   @Column({ type: DataType.UUID, primaryKey: true, field: 'order_id', defaultValue: UUID })
@@ -32,7 +32,7 @@ class Order extends Model {
   @Column({ type: DataType.STRING, field: 'status' })
   status!: string;
 
-  @Column({ type: DataType.INTEGER, field: 'total' })
+  @Column({ type: DataType.FLOAT, field: 'total' })
   total!: number;
 
   @Column({ type: DataType.DATE, field: 'order_date' })

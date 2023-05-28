@@ -9,6 +9,7 @@ import {
   ForeignKey,
   BelongsTo,
   BelongsToMany,
+  HasOne,
 } from 'sequelize-typescript';
 import { Category, ProductImg, User, Cart, Comment, Order, OrderDetail } from '../models';
 
@@ -27,8 +28,8 @@ class Product extends Model {
   @BelongsToMany(() => User, () => Comment)
   userList!: User[];
 
-  @BelongsToMany(() => Order, () => OrderDetail)
-  order!: Order;
+  @HasOne(() => OrderDetail)
+  orderDetail!: OrderDetail;
 
   // Columns
   @Column({
