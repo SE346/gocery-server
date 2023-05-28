@@ -6,6 +6,7 @@ import commentRoute from './comment.route';
 import cartRoute from './cart.route';
 import addressRoute from './address.route';
 import userRoute from './user.route';
+import orderRoute from './order.route';
 import apiDocsRoute from './api-docs.route';
 
 const route = (app: Express) => {
@@ -17,6 +18,7 @@ const route = (app: Express) => {
   app.use('/cart', cartRoute);
   app.use('/address', addressRoute);
   app.use('/user', userRoute);
+  app.use('/order', orderRoute);
 };
 
 export default route;
