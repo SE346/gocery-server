@@ -1,6 +1,7 @@
 import { Router } from 'express';
 import { verifyAccessToken, verifyAdminAccessToken } from '../utils/jwt_service';
 import {
+  getAllOrderController,
   getAllOrderBelongToUserController,
   getSingleOrderByIdController,
   updateStatusOrderByIdController,
@@ -8,6 +9,9 @@ import {
 } from '../controllers/order.controller';
 
 const router: Router = Router();
+
+// [GET] /order/admin -> Get all order
+router.get('/admin', verifyAccessToken, verifyAdminAccessToken, getAllOrderController);
 
 // [GET] /order -> Get all order belong to user
 router.get('/', verifyAccessToken, getAllOrderBelongToUserController);

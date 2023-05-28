@@ -8,6 +8,48 @@ import { OrderStatus } from '../utils/type';
 import { removeKeys } from '../utils/remove_key';
 import { sequelize } from '../config/sequelize';
 
+export const getAllOrderController = async (
+  req: Request,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  try {
+    const orderList = await Order.findAll({
+      attributes: {
+        exclude: ['addressId', 'userMail', 'createdAt', 'updatedAt'],
+      },
+      include: [
+        {
+          model: OrderDetail,
+          attributes: ['quantity', 'price'],
+          include: [
+            {
+              model: Product,
+              attributes: {
+                exclude: ['categoryId', 'quantity', 'createdAt', 'updatedAt'],
+              },
+            },
+          ],
+        },
+        {
+          model: Address,
+          attributes: {
+            exclude: ['userMail', 'active', 'createdAt', 'updatedAt'],
+          },
+        },
+      ],
+    });
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: orderList,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
 export const getAllOrderBelongToUserController = async (
   req: Request,
   res: Response<ResJSON, { payload: IPayload }>,
