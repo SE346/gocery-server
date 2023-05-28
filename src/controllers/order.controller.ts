@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Product, Comment, Order, OrderDetail, Address } from '../models';
+import { Product, Order, OrderDetail, Address } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
@@ -115,10 +115,13 @@ export const getSingleOrderByIdController = async (
     }
 
     const order = await Order.findOne({
-      where: {
-        id: orderId,
-        userMail,
-      },
+      where:
+        res.locals.payload.user.role === 'Shopper'
+          ? {
+              id: orderId,
+              userMail,
+            }
+          : { id: orderId },
       attributes: {
         exclude: ['addressId', 'userMail', 'createdAt', 'updatedAt'],
       },
