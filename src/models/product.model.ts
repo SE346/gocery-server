@@ -22,7 +22,7 @@ class Product extends Model {
   productImgList!: ProductImg[];
 
   @BelongsToMany(() => User, () => Cart)
-  user!: User;
+  cart!: Cart;
 
   @BelongsToMany(() => User, () => Comment)
   userList!: User[];

@@ -48,10 +48,16 @@ export const getAllProductInCartController = async (
       throw createError.InternalServerError('User not found');
     }
 
+    const cartList = cartListUser.cartList;
+    const formatedCartList = cartList.map<object>((item) => {
+      const { cart, ...restCart } = item.dataValues;
+      return { product: restCart, quantity: cart.quantity };
+    });
+
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
-      data: cartListUser.cartList,
+      data: formatedCartList,
     });
   } catch (err) {
     next(err);
