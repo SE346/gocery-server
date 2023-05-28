@@ -8,6 +8,7 @@ import {
   ForeignKey,
   BelongsTo,
   BelongsToMany,
+  HasOne,
 } from 'sequelize-typescript';
 import { Order, User } from '../models';
 
@@ -17,8 +18,8 @@ class Address extends Model {
   @BelongsTo(() => User)
   user!: User;
 
-  @BelongsToMany(() => User, () => Order)
-  userList!: User[];
+  @HasOne(() => Order)
+  order!: Order;
 
   // Columns
   @Column({

@@ -29,8 +29,8 @@ class User extends Model {
   @BelongsToMany(() => Product, () => Comment)
   productList!: Product[];
 
-  @BelongsToMany(() => Address, () => Order)
-  addressList1!: Address[];
+  @HasMany(() => Order)
+  orderList!: Order[];
 
   @HasMany(() => Address)
   addressList!: Address[];

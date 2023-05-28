@@ -7,8 +7,9 @@ import {
   DataType,
   ForeignKey,
   HasMany,
+  BelongsTo,
 } from 'sequelize-typescript';
-import { User, Address, Product, OrderDetail } from './';
+import { User, Address, OrderDetail } from './';
 import { UUID } from 'sequelize';
 
 @Table({ modelName: 'Order', tableName: 'order' })
@@ -16,6 +17,12 @@ class Order extends Model {
   // Associations
   @HasMany(() => OrderDetail)
   orderDetailList!: OrderDetail[];
+
+  @BelongsTo(() => User)
+  user!: User;
+
+  @BelongsTo(() => Address)
+  address!: Address;
 
   // Columns
   @Column({ type: DataType.UUID, primaryKey: true, field: 'order_id', defaultValue: UUID })
