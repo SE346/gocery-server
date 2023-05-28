@@ -4,6 +4,7 @@ import {
   getAllOrderBelongToUserController,
   getSingleOrderByIdController,
   updateStatusOrderByIdController,
+  deleteOrderByIdController,
 } from '../controllers/order.controller';
 
 const router: Router = Router();
@@ -16,5 +17,8 @@ router.get('/:orderId', verifyAccessToken, getSingleOrderByIdController);
 
 // [PUT] /order/{orderId} -> Update status order by id
 router.put('/:orderId', verifyAccessToken, verifyAdminAccessToken, updateStatusOrderByIdController);
+
+// [DELETE] /order/{orderId} -> Delete order by id
+router.delete('/:orderId', verifyAccessToken, verifyAdminAccessToken, deleteOrderByIdController);
 
 export default router;

@@ -6,6 +6,7 @@ import { IPayload } from '../utils/jwt_service';
 import { isUuid, isOrderStatus } from '../utils/validate';
 import { OrderStatus } from '../utils/type';
 import { removeKeys } from '../utils/remove_key';
+import { sequelize } from '../config/sequelize';
 
 export const getAllOrderBelongToUserController = async (
   req: Request,
@@ -171,6 +172,61 @@ export const updateStatusOrderByIdController = async (
       data: removeKeys(['userMail', 'updatedAt', 'createdAt'], updatedOrder[0].dataValues),
     });
   } catch (err) {
+    next(err);
+  }
+};
+
+export const deleteOrderByIdController = async (
+  req: Request<{ orderId: string }>,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    const { orderId } = req.params;
+
+    const isOrderIdValid = isUuid(orderId);
+    if (!isOrderIdValid) {
+      throw createError.BadRequest('OrderId invalid');
+    }
+
+    // Check order with id exist
+    const order = await Order.findOne({
+      where: {
+        id: orderId,
+      },
+      raw: true,
+      transaction: t,
+    });
+
+    if (!order) {
+      throw createError.NotFound('Order with id not exists');
+    }
+
+    await OrderDetail.destroy({
+      where: {
+        orderId,
+      },
+      transaction: t,
+    });
+
+    await Order.destroy({
+      where: {
+        id: orderId,
+      },
+      transaction: t,
+    });
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+    });
+  } catch (err) {
+    await t.rollback();
+
     next(err);
   }
 };
