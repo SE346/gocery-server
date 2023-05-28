@@ -11,6 +11,7 @@ import {
 } from 'sequelize-typescript';
 import { User, Address, OrderDetail } from './';
 import { UUID } from 'sequelize';
+import { OrderStatus } from '../utils/type';
 
 @Table({ modelName: 'Order', tableName: 'order' })
 class Order extends Model {
@@ -37,7 +38,7 @@ class Order extends Model {
   addressId!: string;
 
   @Column({ type: DataType.STRING, field: 'status' })
-  status!: string;
+  status!: OrderStatus;
 
   @Column({ type: DataType.FLOAT, field: 'total' })
   total!: number;

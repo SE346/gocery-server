@@ -4,3 +4,9 @@ export const isUuid = (uuid: string): Boolean => {
 
   return isUuidValid;
 };
+
+export const isOrderStatus = (status: string): Boolean => {
+  const orderStatusList: string[] = ['In Progress', 'Cancelled', 'Finished'];
+
+  return orderStatusList.includes(status);
+};
