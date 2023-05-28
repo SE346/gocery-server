@@ -1,3 +1,6 @@
+drop table order_detail;
+drop table "order";
+
 drop table address;
 drop table comment;
 drop table cart;

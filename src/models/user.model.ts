@@ -11,7 +11,7 @@ import {
   BeforeCreate,
   HasMany,
 } from 'sequelize-typescript';
-import { Role, Rank, UserToRole, UserToRank, Product, Cart, Address, Comment } from './';
+import { Role, Rank, UserToRole, UserToRank, Product, Cart, Address, Comment, Order } from './';
 import bcrypt from 'bcrypt';
 
 @Table({ modelName: 'User', tableName: 'users' })
@@ -28,6 +28,9 @@ class User extends Model {
 
   @BelongsToMany(() => Product, () => Comment)
   productList!: Product[];
+
+  @BelongsToMany(() => Address, () => Order)
+  addressList1!: Address[];
 
   @HasMany(() => Address)
   addressList!: Address[];

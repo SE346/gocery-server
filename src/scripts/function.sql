@@ -1,9 +1,11 @@
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
+
 CREATE OR REPLACE FUNCTION update_timestamp()
-RETURNS TRIGGER 
+RETURNS TRIGGER
 LANGUAGE PLPGSQL
 AS $$
 BEGIN
-   NEW.updated_at = now(); 
+   NEW.updated_at = now();
    RETURN NEW;
 END;
 $$;

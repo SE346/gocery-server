@@ -7,14 +7,18 @@ import {
   DataType,
   ForeignKey,
   BelongsTo,
+  BelongsToMany,
 } from 'sequelize-typescript';
-import { User } from '../models';
+import { Order, User } from '../models';
 
 @Table({ modelName: 'Address', tableName: 'address' })
 class Address extends Model {
   // Associations
   @BelongsTo(() => User)
   user!: User;
+
+  @BelongsToMany(() => User, () => Order)
+  userList!: User[];
 
   // Columns
   @Column({

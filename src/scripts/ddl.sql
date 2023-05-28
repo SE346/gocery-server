@@ -171,3 +171,33 @@ CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON address
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE ORDER:
+CREATE TABLE "order" (
+    order_id UUID DEFAULT uuid_generate_v1 (),
+    user_mail TEXT NOT NULL REFERENCES users(mail),
+    address_id INTEGER NOT NULL REFERENCES address(address_id),
+	status TEXT NOT NULL,
+    total NUMERIC(6,2) NOT NULL,
+    order_date DATE NOT NULL,
+    delivery_date DATE NOT NULL,
+    shipping_fee INTEGER NOT NULL,
+    phone_num VARCHAR(10) NOT NULL,
+    payment_method TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (order_id)
+);
+
+-- CREATE TABLE ORDER_DETAIL:
+CREATE TABLE order_detail (
+    order_id UUID NOT NULL REFERENCES "order"(order_id),
+    product_id TEXT NOT NULL REFERENCES product(product_id),
+	quantity INTEGER NOT NULL,
+    price NUMERIC(5,2) NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY  KEY (order_id, product_id)
+);

@@ -9,6 +9,8 @@ import Product from './product.model';
 import Cart from './cart.model';
 import Comment from './comment.model';
 import Address from './address.model';
+import Order from './order.model';
+import OrderDetail from './orderDetail.model';
 
 export {
   User,
@@ -22,4 +24,6 @@ export {
   Cart,
   Address,
   Comment,
+  Order,
+  OrderDetail,
 };

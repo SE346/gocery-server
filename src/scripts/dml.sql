@@ -68,3 +68,17 @@ insert into comment(product_id, user_mail, content) values ('#124', '20521366@gm
 -- Address table
 insert into address(user_mail, name, province_id, province_name, district_id, district_name, ward_code, ward_name, detail, phone_num) values ('20521366@gm.uit.edu.vn', 'Chị Hưng', 262, 'Tỉnh Bình Định', 1662, 'Thành phố Quy Nhơn', '370115', 'Phường Trần Phú', '41.C Nguyễn Lạc', '0967781796');
 insert into address(user_mail, name, province_id, province_name, district_id, district_name, ward_code, ward_name, detail, phone_num) values ('20521366@gm.uit.edu.vn', 'Bố Hưng', 269, 'Tỉnh Lào Cai', 2264, 'Huyện Si Ma Cai', '90816', 'Thị Trấn Si Ma Cai', '76 Hoàng Văn Tèo', '0967781796');
+
+-- Order table
+insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('0a9d302e-fcf4-11ed-a641-005056c00001', '20521366@gm.uit.edu.vn', 1, 'On process', 123.45, '2023-05-01', '2023-05-05', 20, '0967781796', 'Momo');
+insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('bd70d908-fcf4-11ed-a642-005056c00001', '20521366@gm.uit.edu.vn', 2, 'Finished', 356.57, '2023-04-17', '2023-04-19', 5, '0967781796', 'Zalopay');
+insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('c27062d4-fcf4-11ed-a643-005056c00001', '20521366@gm.uit.edu.vn', 1, 'In Progress', 168.89, '2023-04-20', '2023-04-22', 7, '0967781796', 'Credit');
+insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('cc800770-fcf4-11ed-a644-005056c00001', '20521366@gm.uit.edu.vn', 1, 'Cancelled', 116.56, '2023-01-20', '2023-01-23', 5, '0967781796', 'Cash');
+
+-- OrderDetail table
+insert into order_detail(order_id, product_id, quantity, price) values ('0a9d302e-fcf4-11ed-a641-005056c00001', '#123', 1, 123.45);
+insert into order_detail(order_id, product_id, quantity, price) values ('bd70d908-fcf4-11ed-a642-005056c00001', '#123', 1, 123.45);
+insert into order_detail(order_id, product_id, quantity, price) values ('bd70d908-fcf4-11ed-a642-005056c00001', '#124', 2, 233.12);
+insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#123', 1, 123.45);
+insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#125', 1, 45.44);
+insert into order_detail(order_id, product_id, quantity, price) values ('cc800770-fcf4-11ed-a644-005056c00001', '#124', 1, 116.56);
