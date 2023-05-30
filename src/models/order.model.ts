@@ -1,3 +1,4 @@
+import { v4 as uuid } from 'uuid';
 import {
   Table,
   Column,
@@ -10,8 +11,7 @@ import {
   BelongsTo,
 } from 'sequelize-typescript';
 import { User, Address, OrderDetail } from './';
-import { UUID } from 'sequelize';
-import { OrderStatus } from '../utils/type';
+import { OrderStatus, PaymentType } from '../utils/type';
 
 @Table({ modelName: 'Order', tableName: 'order' })
 class Order extends Model {
@@ -26,7 +26,7 @@ class Order extends Model {
   address!: Address;
 
   // Columns
-  @Column({ type: DataType.UUID, primaryKey: true, field: 'order_id', defaultValue: UUID })
+  @Column({ type: DataType.UUID, primaryKey: true, field: 'order_id', defaultValue: uuid() })
   id!: string;
 
   @ForeignKey(() => User)
@@ -34,8 +34,8 @@ class Order extends Model {
   userMail!: string;
 
   @ForeignKey(() => Address)
-  @Column({ type: DataType.TEXT, field: 'address_id' })
-  addressId!: string;
+  @Column({ type: DataType.INTEGER, field: 'address_id' })
+  addressId!: number;
 
   @Column({ type: DataType.STRING, field: 'status' })
   status!: OrderStatus;
@@ -56,7 +56,7 @@ class Order extends Model {
   phoneNum!: string;
 
   @Column({ type: DataType.STRING, field: 'payment_method' })
-  paymentMethod!: string;
+  paymentMethod!: PaymentType;
 
   @CreatedAt
   @Column({ type: DataType.DATE, field: 'created_at' })

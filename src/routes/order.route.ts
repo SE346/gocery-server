@@ -3,6 +3,8 @@ import { verifyAccessToken, verifyAdminAccessToken } from '../utils/jwt_service'
 import {
   getAllOrderController,
   getAllOrderBelongToUserController,
+  inventoryCheckController,
+  createOrderController,
   getSingleOrderByIdController,
   updateStatusOrderByIdController,
   deleteOrderByIdController,
@@ -15,6 +17,12 @@ router.get('/admin', verifyAccessToken, verifyAdminAccessToken, getAllOrderContr
 
 // [GET] /order -> Get all order belong to user
 router.get('/', verifyAccessToken, getAllOrderBelongToUserController);
+
+// [GET] /pre-order -> Inventory check
+router.get('/pre-order', verifyAccessToken, inventoryCheckController);
+
+// [POST] /order -> Create order
+router.post('/', verifyAccessToken, createOrderController);
 
 // [GET] /order/{orderId} -> Get single order by id
 router.get('/:orderId', verifyAccessToken, getSingleOrderByIdController);

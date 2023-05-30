@@ -10,3 +10,9 @@ export const isOrderStatus = (status: string): Boolean => {
 
   return orderStatusList.includes(status);
 };
+
+export const isPaymentMethod = (method: string): Boolean => {
+  const paymentMethodList: string[] = ['Momo', 'Zalopay', 'Credit'];
+
+  return paymentMethodList.includes(method);
+};
