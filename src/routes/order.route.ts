@@ -4,7 +4,7 @@ import {
   getAllOrderController,
   getAllOrderBelongToUserController,
   inventoryCheckController,
-  createOrderController,
+  createOrderWithoutCartController,
   getSingleOrderByIdController,
   updateStatusOrderByIdController,
   deleteOrderByIdController,
@@ -22,7 +22,7 @@ router.get('/', verifyAccessToken, getAllOrderBelongToUserController);
 router.get('/pre-order', verifyAccessToken, inventoryCheckController);
 
 // [POST] /order -> Create order
-router.post('/', verifyAccessToken, createOrderController);
+router.post('/', verifyAccessToken, createOrderWithoutCartController);
 
 // [GET] /order/{orderId} -> Get single order by id
 router.get('/:orderId', verifyAccessToken, getSingleOrderByIdController);

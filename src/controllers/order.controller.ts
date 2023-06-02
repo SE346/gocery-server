@@ -12,7 +12,9 @@ import {
   calculatePriceOnOrder,
   checkQuantity,
   formattedOrderDetail,
+  recalculateQuantityInventory,
 } from '../services/orderService.service';
+import { v4 as uuid } from 'uuid';
 
 export const getAllOrderController = async (
   req: Request,
@@ -147,7 +149,7 @@ export const inventoryCheckController = async (
   }
 };
 
-export const createOrderController = async (
+export const createOrderWithoutCartController = async (
   req: Request<
     {},
     {},
@@ -215,6 +217,7 @@ export const createOrderController = async (
 
     const createdOrder = await Order.create(
       {
+        id: uuid(),
         userMail,
         addressId,
         status: 'In Progress',
@@ -236,6 +239,22 @@ export const createOrderController = async (
       transaction: t,
     });
 
+    // Update inventory
+    for (const productItem of productListExist) {
+      const lastQuantity = recalculateQuantityInventory(productItem, productList);
+      await Product.update(
+        {
+          quantity: lastQuantity,
+        },
+        {
+          where: {
+            id: productItem.id,
+          },
+          transaction: t,
+        }
+      );
+    }
+
     await t.commit();
 
     res.status(201).json({
@@ -244,7 +263,7 @@ export const createOrderController = async (
       data: createdOrder,
     });
   } catch (err) {
-    t.rollback();
+    await t.rollback();
     next(err);
   }
 };

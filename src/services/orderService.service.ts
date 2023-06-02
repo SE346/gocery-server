@@ -6,13 +6,12 @@ export const checkQuantity = (
 ): Boolean => {
   let valid = true;
 
-  productListRequired.forEach((requiredItem) => {
-    productListInventory.forEach((availableItem) => {
-      if (requiredItem.quantity > availableItem.quantity) {
-        valid = false;
-        return;
-      }
-    });
+  productListInventory.forEach((availableItem) => {
+    const requiredQuantity = findQuantity(productListRequired, availableItem.id).quantity;
+    if (availableItem.quantity < requiredQuantity) {
+      valid = false;
+      return;
+    }
   });
 
   return valid;
@@ -55,4 +54,16 @@ export const formattedOrderDetail = (
   });
 
   return productListRequired;
+};
+
+const findQuantityInRequiredList = (productList: OrderDetail[], id: string): number => {
+  return productList.find((item) => item.productId === id)!.quantity;
+};
+
+export const recalculateQuantityInventory = (
+  product: Product,
+  orderDetailList: OrderDetail[]
+): number => {
+  const quantity = findQuantityInRequiredList(orderDetailList, product.id);
+  return product.quantity - quantity;
 };
