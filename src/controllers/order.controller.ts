@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Product, Order, OrderDetail, Address } from '../models';
+import { Product, Order, OrderDetail, Address, Cart } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
@@ -10,9 +10,13 @@ import { sequelize } from '../config/sequelize';
 import { productOrderDetailListSchema } from '../utils/schema';
 import {
   calculatePriceOnOrder,
+  calculatePriceOnOrderCart,
+  checkCartQuantity,
   checkQuantity,
   formattedOrderDetail,
+  orderDetailMappingFromCart,
   recalculateQuantityInventory,
+  recalculateQuantityInventoryCart,
 } from '../services/orderService.service';
 import { v4 as uuid } from 'uuid';
 
@@ -254,6 +258,139 @@ export const createOrderWithoutCartController = async (
         }
       );
     }
+
+    await t.commit();
+
+    res.status(201).json({
+      statusCode: 201,
+      message: 'Success',
+      data: createdOrder,
+    });
+  } catch (err) {
+    await t.rollback();
+    next(err);
+  }
+};
+
+export const createOrderWithCartController = async (
+  req: Request<
+    {},
+    {},
+    {
+      addressId: string;
+      phoneNum: string;
+      deliveryDate: Date;
+      paymentMethod: PaymentType;
+    }
+  >,
+  res: Response<ResJSON, { payload: IPayload }>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    // Get userMail from previous middleware
+    const userMail = res.locals.payload.user.mail;
+
+    const { addressId, phoneNum, deliveryDate, paymentMethod } = req.body;
+
+    if (!addressId || !phoneNum || !deliveryDate || !paymentMethod) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    const isPaymentMethodValid = isPaymentMethod(paymentMethod);
+    if (!isPaymentMethodValid) {
+      throw createError.BadRequest(
+        'paymentMethod in body only take 3 values: Momo, Zalopay, Credit'
+      );
+    }
+
+    const address = await Address.findOne({
+      where: {
+        id: addressId,
+        userMail,
+      },
+      transaction: t,
+    });
+    if (!address) {
+      throw createError.Conflict('addressId invalid');
+    }
+
+    const cart = await Cart.findAll({
+      where: {
+        userMail,
+      },
+      raw: true,
+    });
+
+    if (cart.length === 0) {
+      throw createError.Conflict('Cart empty');
+    }
+
+    const productListExist = await Product.findAll({
+      where: {
+        id: cart.map((cartItem) => cartItem.productId),
+      },
+      raw: true,
+      transaction: t,
+    });
+    if (productListExist.length < cart.length) {
+      throw createError.InternalServerError('Product with id not exist in inventory');
+    }
+
+    const isAvailable = checkCartQuantity(cart, productListExist);
+    if (!isAvailable) {
+      throw createError.Conflict('Product quantity in cart greater than available product');
+    }
+
+    const totalPrice = calculatePriceOnOrderCart(cart, productListExist) + 2;
+
+    const createdOrder = await Order.create(
+      {
+        id: uuid(),
+        userMail,
+        addressId,
+        status: 'In Progress',
+        total: totalPrice,
+        orderDate: new Date(),
+        deliveryDate,
+        phoneNum,
+        paymentMethod,
+        shippingFee: 2,
+      },
+      {
+        transaction: t,
+      }
+    );
+
+    const orderDetailList = orderDetailMappingFromCart(createdOrder.id, cart, productListExist);
+
+    const createdOrderDetailList = await OrderDetail.bulkCreate(orderDetailList, {
+      transaction: t,
+    });
+
+    // Update inventory
+    for (const productItem of productListExist) {
+      const lastQuantity = recalculateQuantityInventoryCart(productItem, cart);
+      await Product.update(
+        {
+          quantity: lastQuantity,
+        },
+        {
+          where: {
+            id: productItem.id,
+          },
+          transaction: t,
+        }
+      );
+    }
+
+    // Update cart
+    await Cart.destroy({
+      where: {
+        userMail,
+      },
+    });
 
     await t.commit();
 
