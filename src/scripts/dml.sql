@@ -93,3 +93,4 @@ insert into coupon_item(coupon_id, code, is_active) values (1, 's23cxak0zq', tru
 insert into coupon_item(coupon_id, code, is_active) values (1, '84u38Xvj8Z', true);
 insert into coupon_item(coupon_id, code, is_active) values (2, 'ksdhf8AxjA', true);
 insert into coupon_item(coupon_id, code, is_active) values (2, 'skj87a6ZVV', true);
+insert into coupon_item(coupon_id, code, is_active) values (3, 'jkAv73Ac91', true);

@@ -1,6 +1,6 @@
 export interface ResJSON {
   statusCode: number;
   message: string;
-  data?: Object;
+  data?: Object | null;
   error?: string;
 }
