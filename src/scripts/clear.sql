@@ -1,3 +1,5 @@
+drop table coupon_item;
+drop table coupon;
 drop table order_detail;
 drop table "order";
 

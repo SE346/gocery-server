@@ -10,7 +10,7 @@ import {
   HasMany,
   BelongsTo,
 } from 'sequelize-typescript';
-import { User, Address, OrderDetail } from './';
+import { User, Address, OrderDetail, CouponItem } from './';
 import { OrderStatus, PaymentType } from '../utils/type';
 
 @Table({ modelName: 'Order', tableName: 'order' })
@@ -25,6 +25,9 @@ class Order extends Model {
   @BelongsTo(() => Address)
   address!: Address;
 
+  @BelongsTo(() => CouponItem)
+  couponItem!: CouponItem;
+
   // Columns
   @Column({ type: DataType.UUID, primaryKey: true, field: 'order_id', defaultValue: uuid() })
   id!: string;
@@ -36,6 +39,10 @@ class Order extends Model {
   @ForeignKey(() => Address)
   @Column({ type: DataType.INTEGER, field: 'address_id' })
   addressId!: number;
+
+  @ForeignKey(() => CouponItem)
+  @Column({ type: DataType.INTEGER, field: 'coupon_item_id' })
+  couponItemId!: number;
 
   @Column({ type: DataType.STRING, field: 'status' })
   status!: OrderStatus;

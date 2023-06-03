@@ -11,6 +11,8 @@ import Comment from './comment.model';
 import Address from './address.model';
 import Order from './order.model';
 import OrderDetail from './orderDetail.model';
+import Coupon from './coupon.model';
+import CouponItem from './couponItem';
 
 export {
   User,
@@ -26,4 +28,6 @@ export {
   Comment,
   Order,
   OrderDetail,
+  Coupon,
+  CouponItem,
 };

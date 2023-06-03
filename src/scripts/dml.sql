@@ -82,3 +82,14 @@ insert into order_detail(order_id, product_id, quantity, price) values ('bd70d90
 insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#123', 1, 123.45);
 insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#125', 1, 45.44);
 insert into order_detail(order_id, product_id, quantity, price) values ('cc800770-fcf4-11ed-a644-005056c00001', '#124', 1, 116.56);
+
+-- Coupon table
+insert into coupon(from_date, end_date, coupon_type, discount, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'DiscountPercent', 10, 500, 2, 'Giảm 10% hóa đơn từ 500$', 'https://placehold.co/400x400');
+insert into coupon(from_date, end_date, coupon_type, discount, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'DiscountValue', 20, 300, 1, 'Giảm 20$ cho hóa đơn từ 300$', 'https://placehold.co/400x400');
+insert into coupon(from_date, end_date, coupon_type, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'Freeship', 120, 1, 'Freeship cho hóa đơn từ 500$', 'https://placehold.co/400x400');
+
+-- CouponItem table
+insert into coupon_item(coupon_id, code, is_active) values (1, 's23cxak0zq', true);
+insert into coupon_item(coupon_id, code, is_active) values (1, '84u38Xvj8Z', true);
+insert into coupon_item(coupon_id, code, is_active) values (2, 'ksdhf8AxjA', true);
+insert into coupon_item(coupon_id, code, is_active) values (2, 'skj87a6ZVV', true);

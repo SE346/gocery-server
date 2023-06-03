@@ -177,6 +177,7 @@ CREATE TABLE "order" (
     order_id UUID DEFAULT uuid_generate_v1 (),
     user_mail TEXT NOT NULL REFERENCES users(mail),
     address_id INTEGER NOT NULL REFERENCES address(address_id),
+    coupon_item_id INTEGER NOT NULL REFERENCES coupon_item(coupon_item_id),
 	status TEXT NOT NULL,
     total FLOAT NOT NULL,
     order_date TIMESTAMP NOT NULL,
@@ -201,3 +202,36 @@ CREATE TABLE order_detail (
 
     PRIMARY  KEY (order_id, product_id)
 );
+
+-- CREATE TABLE COUPON:
+CREATE TABLE coupon (
+    coupon_id SERIAL PRIMARY KEY,
+    from_date DATE NOT NULL,
+    end_date DATE NOT NULL,
+    counpon_type VARCHAR(255) NOT NULL,
+    discount INTEGER,
+    price_point_accept FLOAT NOT NULL,
+    quantity INTEGER NOT NULL,
+    description TEXT,
+    thumbnail TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON coupon
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE COUPON_ITEM:
+CREATE TABLE coupon_item (
+    coupon_item_id SERIAL PRIMARY KEY,
+    coupon_id INTEGER NOT NULL,
+    code VARCHAR(255) NOT NULL,
+    is_active BOOLEAN NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON coupon_item
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
