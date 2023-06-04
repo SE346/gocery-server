@@ -6,6 +6,7 @@ import {
   createCouponController,
   generateCouponController,
   updateCouponController,
+  removeSingleCouponItemByIdController,
   removeSingleCouponByIdController,
 } from '../controllers/coupon.controller';
 const router: Router = Router();
@@ -24,6 +25,14 @@ router.post('/generate', verifyAccessToken, verifyAdminAccessToken, generateCoup
 
 // [PUT] /coupon/{couponId} -> Update coupon
 router.put('/:couponId', verifyAccessToken, verifyAdminAccessToken, updateCouponController);
+
+// [DELETE] /coupon/item/{couponItemId} -> Remove single coupon item by id
+router.delete(
+  '/item/:couponItemId',
+  verifyAccessToken,
+  verifyAdminAccessToken,
+  removeSingleCouponItemByIdController
+);
 
 // [DELETE] /coupon/{couponId} -> Remove single coupon by id
 router.delete(

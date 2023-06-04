@@ -290,6 +290,70 @@ export const updateCouponController = async (
   }
 };
 
+type removeSingleCouponItemByIdRequest = Request<{ couponItemId: string }>;
+export const removeSingleCouponItemByIdController = async (
+  req: removeSingleCouponItemByIdRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    // Get id & convert to number
+    const { couponItemId: unconvertCouponId } = req.params;
+    const couponItemId: number = +unconvertCouponId;
+
+    const coupon = await CouponItem.findOne({
+      where: {
+        id: couponItemId,
+      },
+      transaction: t,
+    });
+
+    if (!coupon) {
+      throw createError.BadRequest('CouponItem with id not exist');
+    }
+
+    const orderWithCoupon = await Order.findAll({
+      where: {
+        couponItemId: couponItemId,
+      },
+      transaction: t,
+    });
+
+    if (orderWithCoupon.length >= 1) {
+      throw createError.Conflict('Unable to delete this couponitem');
+    }
+
+    // Uodate coupon
+    await Coupon.decrement('quantity', {
+      by: 1,
+      where: {
+        id: coupon.couponId,
+      },
+      transaction: t,
+    });
+
+    // Delete coupon
+    await CouponItem.destroy({
+      where: {
+        id: couponItemId,
+      },
+      transaction: t,
+    });
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+    });
+  } catch (err) {
+    await t.rollback();
+    next(err);
+  }
+};
+
 type removeSingleCouponByIdRequest = Request<{ couponId: string }>;
 export const removeSingleCouponByIdController = async (
   req: removeSingleCouponByIdRequest,
