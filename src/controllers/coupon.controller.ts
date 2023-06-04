@@ -3,7 +3,7 @@ import createError from 'http-errors';
 import { Coupon, CouponItem, Order } from '../models';
 import { ResJSON } from '../utils/interface';
 import { sequelize } from '../config/sequelize';
-import { assertCodeList, mutipleGenerate } from '../services/couponService.service';
+import { assertCode, assertCodeList, mutipleGenerate } from '../services/couponService.service';
 import { removeKeys } from '../utils/remove_key';
 
 export const getAllCouponController = async (
@@ -286,6 +286,99 @@ export const updateCouponController = async (
       data: removeKeys(['updatedAt', 'createdAt'], updatedCoupon[0].dataValues),
     });
   } catch (err) {
+    next(err);
+  }
+};
+
+type updateSingleCouponItemByIdRequest = Request<
+  { couponItemId: string },
+  unknown,
+  {
+    code: string;
+    isActive: boolean;
+  }
+>;
+export const updateSingleCouponItemByIdController = async (
+  req: updateSingleCouponItemByIdRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    // Get id & convert to number
+    const { couponItemId: unconvertCouponId } = req.params;
+    const couponItemId: number = +unconvertCouponId;
+
+    const coupon = await CouponItem.findOne({
+      where: {
+        id: couponItemId,
+      },
+      transaction: t,
+    });
+
+    if (!coupon) {
+      throw createError.BadRequest('CouponItem with id not exist');
+    }
+
+    // Get body
+    const { code, isActive } = req.body;
+
+    if (code) {
+      const codeValid = assertCode(code);
+      if (!codeValid) {
+        throw createError.BadRequest('Code invalid');
+      }
+      const codeExist = await CouponItem.findAll({
+        where: {
+          code,
+        },
+        transaction: t,
+      });
+      if (codeExist.length >= 1) {
+        throw createError.Conflict('Code existed');
+      }
+    }
+
+    if (code === undefined && isActive === undefined) {
+      throw createError.BadRequest('Body empty');
+    }
+
+    const orderWithCoupon = await Order.findAll({
+      where: {
+        couponItemId: couponItemId,
+      },
+      transaction: t,
+    });
+
+    if (orderWithCoupon.length >= 1) {
+      throw createError.Conflict('Unable to update this couponitem');
+    }
+
+    // Update couponitem
+    const [_, updatedCouponItem] = await CouponItem.update(
+      {
+        code,
+        isActive,
+      },
+      {
+        where: {
+          id: couponItemId,
+        },
+        returning: true,
+        transaction: t,
+      }
+    );
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: removeKeys(['createdAt', 'updatedAt'], updatedCouponItem[0].dataValues),
+    });
+  } catch (err) {
+    await t.rollback();
     next(err);
   }
 };
