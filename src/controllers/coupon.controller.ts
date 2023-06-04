@@ -3,6 +3,7 @@ import createError from 'http-errors';
 import { Coupon, CouponItem, Order } from '../models';
 import { ResJSON } from '../utils/interface';
 import { sequelize } from '../config/sequelize';
+import { assertCodeList, mutipleGenerate } from '../services/couponService.service';
 
 export const getAllCouponController = async (
   req: Request,
@@ -34,8 +35,10 @@ export const getAllCouponController = async (
   }
 };
 
+type getSingleCouponByIdRequest = Request<{ couponId: string }>;
+
 export const getSingleCouponByIdController = async (
-  req: Request<{ couponId: string }>,
+  req: getSingleCouponByIdRequest,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
@@ -71,8 +74,159 @@ export const getSingleCouponByIdController = async (
   }
 };
 
+type createCouponRequest = Request<
+  unknown,
+  unknown,
+  Partial<{
+    fromDate: Date;
+    endDate: Date;
+    couponType: CouponType;
+    discount: number;
+    pricePointAccept: number;
+    quantity: number;
+    description: string;
+    thumbnail: string;
+    codeList: string[];
+  }>
+>;
+
+enum CouponType {
+  DISCOUNT_PERCENT = 'DiscountPercent',
+  DISCOUNT_VALUE = 'DiscountValue',
+  FREESHIP = 'Freeship',
+}
+
+export const createCouponController = async (
+  req: createCouponRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    const {
+      fromDate,
+      endDate,
+      couponType,
+      description,
+      discount,
+      pricePointAccept,
+      quantity,
+      thumbnail,
+      codeList,
+    } = req.body;
+
+    if (
+      !fromDate ||
+      !endDate ||
+      !couponType ||
+      !description ||
+      !pricePointAccept ||
+      !quantity ||
+      !thumbnail
+    ) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    // Check coupon type
+    if (!Object.values(CouponType).includes(couponType)) {
+      throw createError.BadRequest(
+        'CouponType only take 3 values: "DiscountPercent", "DiscountValue", "Freeship"'
+      );
+    }
+
+    const generatedCodeList = [];
+    if (req.body.codeList === undefined) {
+      const codeGenerate = mutipleGenerate(quantity);
+      generatedCodeList.push(...codeGenerate);
+    } else {
+      const isCodeValid = assertCodeList(codeList!);
+      if (!isCodeValid) {
+        throw createError.BadRequest('Code invalid');
+      }
+      generatedCodeList.push(...codeList!);
+    }
+
+    // Check code exists
+    const codeValid = await CouponItem.findAll({
+      where: {
+        code: generatedCodeList,
+      },
+      raw: true,
+    });
+    if (codeValid.length > 0) {
+      throw createError.BadRequest('Code in codelist exist');
+    }
+
+    const createdCoupon = await Coupon.create(
+      {
+        fromDate,
+        endDate,
+        couponType,
+        discount,
+        pricePointAccept,
+        quantity,
+        description,
+        thumbnail,
+      },
+      {
+        raw: true,
+        transaction: t,
+      }
+    );
+
+    const createdCouponItem = await CouponItem.bulkCreate(
+      generatedCodeList.map((item) => ({
+        couponId: createdCoupon.id,
+        code: item,
+        isActive: true,
+      })),
+      { transaction: t, returning: true }
+    );
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: { ...createdCoupon.dataValues, couponItemList: createdCouponItem },
+    });
+  } catch (err) {
+    await t.rollback();
+    next(err);
+  }
+};
+
+type GenerateCouponRequest = Request<unknown, unknown, Partial<{ quantity: number }>>;
+export const generateCouponController = async (
+  req: GenerateCouponRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  try {
+    const quantity = req.body.quantity;
+    if (!quantity) {
+      throw createError.BadRequest('Quantity field missing body');
+    }
+    if (quantity < 1) {
+      throw createError.BadRequest('Quantity must greater than 0');
+    }
+
+    const generatedCodeList = mutipleGenerate(quantity);
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: generatedCodeList,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+type removeSingleCouponByIdRequest = Request<{ couponId: string }>;
 export const removeSingleCouponByIdController = async (
-  req: Request<{ couponId: string }>,
+  req: removeSingleCouponByIdRequest,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
