@@ -172,43 +172,12 @@ ON address
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
 
--- CREATE TABLE ORDER:
-CREATE TABLE "order" (
-    order_id UUID DEFAULT uuid_generate_v1 (),
-    user_mail TEXT NOT NULL REFERENCES users(mail),
-    address_id INTEGER NOT NULL REFERENCES address(address_id),
-    coupon_item_id INTEGER NOT NULL REFERENCES coupon_item(coupon_item_id),
-	status TEXT NOT NULL,
-    total FLOAT NOT NULL,
-    order_date TIMESTAMP NOT NULL,
-    delivery_date TIMESTAMP NOT NULL,
-    shipping_fee INTEGER NOT NULL,
-    phone_num VARCHAR(10) NOT NULL,
-    payment_method TEXT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY KEY (order_id)
-);
-
--- CREATE TABLE ORDER_DETAIL:
-CREATE TABLE order_detail (
-    order_id UUID NOT NULL REFERENCES "order"(order_id),
-    product_id TEXT NOT NULL REFERENCES product(product_id),
-	quantity INTEGER NOT NULL,
-    price FLOAT NOT NULL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-
-    PRIMARY  KEY (order_id, product_id)
-);
-
 -- CREATE TABLE COUPON:
 CREATE TABLE coupon (
     coupon_id SERIAL PRIMARY KEY,
     from_date DATE NOT NULL,
     end_date DATE NOT NULL,
-    counpon_type VARCHAR(255) NOT NULL,
+    coupon_type VARCHAR(255) NOT NULL,
     discount INTEGER,
     price_point_accept FLOAT NOT NULL,
     quantity INTEGER NOT NULL,
@@ -235,3 +204,34 @@ CREATE TRIGGER update_db_timestamp BEFORE UPDATE
 ON coupon_item
 FOR EACH ROW
 EXECUTE PROCEDURE update_timestamp();
+
+-- CREATE TABLE ORDER:
+CREATE TABLE "order" (
+    order_id UUID DEFAULT uuid_generate_v1 (),
+    user_mail TEXT NOT NULL REFERENCES users(mail),
+    address_id INTEGER NOT NULL REFERENCES address(address_id),
+    coupon_item_id INTEGER REFERENCES coupon_item(coupon_item_id),
+	status TEXT NOT NULL,
+    total FLOAT NOT NULL,
+    order_date TIMESTAMP NOT NULL,
+    delivery_date TIMESTAMP NOT NULL,
+    shipping_fee INTEGER NOT NULL,
+    phone_num VARCHAR(10) NOT NULL,
+    payment_method TEXT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY KEY (order_id)
+);
+
+-- CREATE TABLE ORDER_DETAIL:
+CREATE TABLE order_detail (
+    order_id UUID NOT NULL REFERENCES "order"(order_id),
+    product_id TEXT NOT NULL REFERENCES product(product_id),
+	quantity INTEGER NOT NULL,
+    price FLOAT NOT NULL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+
+    PRIMARY  KEY (order_id, product_id)
+);

@@ -1,7 +1,7 @@
-drop table coupon_item;
-drop table coupon;
 drop table order_detail;
 drop table "order";
+drop table coupon_item;
+drop table coupon;
 
 drop table address;
 drop table comment;

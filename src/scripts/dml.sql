@@ -26,14 +26,14 @@ insert into user_to_rank(user_mail, rank_id, monney_acc_cur, transaction_cur) va
 insert into user_to_rank(user_mail, rank_id) values ('20521760@gm.uit.edu.vn', 2);
 
 -- Category table
-insert into category(category_name, category_image) values ('Vegetables', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Fruits', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Meat', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Seafood', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Milk & Egg', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Bread', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Frozen', 'https://placehold.co/400x400');
-insert into category(category_name, category_image) values ('Organic', 'https://placehold.co/400x400');
+insert into category(category_name, category_image) values ('Vegetables', 'https://images.unsplash.com/photo-1597362925123-77861d3fbac7?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8NHx8dmVnZXRhYmxlc3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Fruits', 'https://images.unsplash.com/photo-1619566636858-adf3ef46400b?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8OXx8ZnJ1aXR8ZW58MHx8MHx8fDA%3D&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Meat', 'https://images.unsplash.com/photo-1602470520998-f4a52199a3d6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTh8fG1lYXR8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Seafood', 'https://images.unsplash.com/photo-1498654200943-1088dd4438ae?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTd8fG1lYXR8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Milk & Egg', 'https://images.unsplash.com/photo-1488477181946-6428a0291777?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8M3x8bWlsayUyMGFuZCUyMGZvb2R8ZW58MHx8MHx8&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Bread', 'https://images.unsplash.com/photo-1608198093002-ad4e005484ec?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MTB8fGJyZWFkfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Frozen', 'https://images.unsplash.com/photo-1578323851363-cf6a1a6afbb6?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Nnx8aWNlfGVufDB8fDB8fA%3D%3D&auto=format&fit=crop&w=800&q=60');
+insert into category(category_name, category_image) values ('Organic', 'https://images.unsplash.com/photo-1553787434-45e1d245bfbb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8b3JnYW5pY3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60');
 
 -- Product table
 insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#123', 1, 'Xà lách búp mỡ thuỷ canh từ 200g', 10, '', 17, 29, 'pack');
@@ -69,6 +69,18 @@ insert into comment(product_id, user_mail, content) values ('#124', '20521366@gm
 insert into address(user_mail, name, province_id, province_name, district_id, district_name, ward_code, ward_name, detail, phone_num) values ('20521366@gm.uit.edu.vn', 'Chị Hưng', 262, 'Tỉnh Bình Định', 1662, 'Thành phố Quy Nhơn', '370115', 'Phường Trần Phú', '41.C Nguyễn Lạc', '0967781796');
 insert into address(user_mail, name, province_id, province_name, district_id, district_name, ward_code, ward_name, detail, phone_num) values ('20521366@gm.uit.edu.vn', 'Bố Hưng', 269, 'Tỉnh Lào Cai', 2264, 'Huyện Si Ma Cai', '90816', 'Thị Trấn Si Ma Cai', '76 Hoàng Văn Tèo', '0967781796');
 
+-- Coupon table
+insert into coupon(from_date, end_date, coupon_type, discount, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'DiscountPercent', 10, 500, 2, 'Giảm 10% hóa đơn từ 500$', 'https://placehold.co/400x400');
+insert into coupon(from_date, end_date, coupon_type, discount, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'DiscountValue', 20, 300, 1, 'Giảm 20$ cho hóa đơn từ 300$', 'https://placehold.co/400x400');
+insert into coupon(from_date, end_date, coupon_type, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'Freeship', 120, 1, 'Freeship cho hóa đơn từ 500$', 'https://placehold.co/400x400');
+
+-- CouponItem table
+insert into coupon_item(coupon_id, code, is_active) values (1, 's23cxak0zq', true);
+insert into coupon_item(coupon_id, code, is_active) values (1, '84u38Xvj8Z', true);
+insert into coupon_item(coupon_id, code, is_active) values (2, 'ksdhf8AxjA', true);
+insert into coupon_item(coupon_id, code, is_active) values (2, 'skj87a6ZVV', true);
+insert into coupon_item(coupon_id, code, is_active) values (3, 'jkAv73Ac91', true);
+
 -- Order table
 insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('0a9d302e-fcf4-11ed-a641-005056c00001', '20521366@gm.uit.edu.vn', 1, 'In Progress', 123.45, '2023-05-01', '2023-05-05', 20, '0967781796', 'Momo');
 insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('bd70d908-fcf4-11ed-a642-005056c00001', '20521366@gm.uit.edu.vn', 2, 'Finished', 356.57, '2023-04-17', '2023-04-19', 5, '0967781796', 'Zalopay');
@@ -82,15 +94,3 @@ insert into order_detail(order_id, product_id, quantity, price) values ('bd70d90
 insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#123', 1, 123.45);
 insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#125', 1, 45.44);
 insert into order_detail(order_id, product_id, quantity, price) values ('cc800770-fcf4-11ed-a644-005056c00001', '#124', 1, 116.56);
-
--- Coupon table
-insert into coupon(from_date, end_date, coupon_type, discount, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'DiscountPercent', 10, 500, 2, 'Giảm 10% hóa đơn từ 500$', 'https://placehold.co/400x400');
-insert into coupon(from_date, end_date, coupon_type, discount, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'DiscountValue', 20, 300, 1, 'Giảm 20$ cho hóa đơn từ 300$', 'https://placehold.co/400x400');
-insert into coupon(from_date, end_date, coupon_type, price_point_accept, quantity, description, thumbnail) values ('2023-06-02', '2023-07-03', 'Freeship', 120, 1, 'Freeship cho hóa đơn từ 500$', 'https://placehold.co/400x400');
-
--- CouponItem table
-insert into coupon_item(coupon_id, code, is_active) values (1, 's23cxak0zq', true);
-insert into coupon_item(coupon_id, code, is_active) values (1, '84u38Xvj8Z', true);
-insert into coupon_item(coupon_id, code, is_active) values (2, 'ksdhf8AxjA', true);
-insert into coupon_item(coupon_id, code, is_active) values (2, 'skj87a6ZVV', true);
-insert into coupon_item(coupon_id, code, is_active) values (3, 'jkAv73Ac91', true);
