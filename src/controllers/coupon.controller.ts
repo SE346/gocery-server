@@ -4,6 +4,7 @@ import { Coupon, CouponItem, Order } from '../models';
 import { ResJSON } from '../utils/interface';
 import { sequelize } from '../config/sequelize';
 import { assertCodeList, mutipleGenerate } from '../services/couponService.service';
+import { removeKeys } from '../utils/remove_key';
 
 export const getAllCouponController = async (
   req: Request,
@@ -218,6 +219,71 @@ export const generateCouponController = async (
       statusCode: 200,
       message: 'Success',
       data: generatedCodeList,
+    });
+  } catch (err) {
+    next(err);
+  }
+};
+
+type UpdateCouponRequest = Request<
+  { couponId: string },
+  unknown,
+  Partial<{
+    fromDate: Date;
+    endDate: Date;
+    couponType: CouponType;
+    discount: number;
+    pricePointAccept: number;
+    description: string;
+    thumbnail: string;
+  }>
+>;
+export const updateCouponController = async (
+  req: UpdateCouponRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  try {
+    // Get id & convert to number
+    const { couponId: unconvertCouponId } = req.params;
+    const couponId: number = +unconvertCouponId;
+
+    const { fromDate, endDate, couponType, description, discount, pricePointAccept, thumbnail } =
+      req.body;
+
+    if (!fromDate || !endDate || !couponType || !description || !pricePointAccept || !thumbnail) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    // Check coupon type
+    if (!Object.values(CouponType).includes(couponType)) {
+      throw createError.BadRequest(
+        'CouponType only take 3 values: "DiscountPercent", "DiscountValue", "Freeship"'
+      );
+    }
+
+    const [_, updatedCoupon] = await Coupon.update(
+      {
+        fromDate,
+        endDate,
+        couponType,
+        description,
+        discount,
+        pricePointAccept,
+        thumbnail,
+      },
+      {
+        where: {
+          id: couponId,
+        },
+        returning: true,
+      }
+    );
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: removeKeys(['updatedAt', 'createdAt'], updatedCoupon[0].dataValues),
     });
   } catch (err) {
     next(err);
