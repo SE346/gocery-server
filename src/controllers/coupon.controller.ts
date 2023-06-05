@@ -3,7 +3,12 @@ import createError from 'http-errors';
 import { Coupon, CouponItem, Order } from '../models';
 import { ResJSON } from '../utils/interface';
 import { sequelize } from '../config/sequelize';
-import { assertCode, assertCodeList, mutipleGenerate } from '../services/couponService.service';
+import {
+  assertCode,
+  assertCodeList,
+  generateRandomString,
+  mutipleGenerate,
+} from '../services/couponService.service';
 import { removeKeys } from '../utils/remove_key';
 
 export const getAllCouponController = async (
@@ -286,6 +291,97 @@ export const updateCouponController = async (
       data: removeKeys(['updatedAt', 'createdAt'], updatedCoupon[0].dataValues),
     });
   } catch (err) {
+    next(err);
+  }
+};
+
+type addSingleCouponItemRequest = Request<
+  unknown,
+  unknown,
+  {
+    couponId: number;
+    code: string;
+    isActive: boolean;
+  }
+>;
+export const addSingleCouponItemController = async (
+  req: addSingleCouponItemRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    // Get body
+    const { couponId, code, isActive } = req.body;
+
+    if (!couponId) {
+      throw createError.BadRequest('CouponId missing');
+    }
+
+    // Check couponId valid
+    const coupon = await Coupon.findOne({
+      where: {
+        id: couponId,
+      },
+      transaction: t,
+    });
+    if (!coupon) {
+      throw createError.Conflict('Coupon with id not found');
+    }
+
+    let newCode;
+
+    if (code) {
+      const codeValid = assertCode(code);
+      if (!codeValid) {
+        throw createError.BadRequest('Code invalid');
+      }
+      const codeExist = await CouponItem.findAll({
+        where: {
+          code,
+        },
+        transaction: t,
+      });
+      if (codeExist.length >= 1) {
+        throw createError.Conflict('Code existed');
+      }
+
+      newCode = code;
+    } else {
+      newCode = generateRandomString();
+    }
+
+    // Create coupon item
+    const createdCouponItem = await CouponItem.create(
+      {
+        couponId,
+        code: newCode,
+        isActive: isActive ? isActive : true,
+      },
+      {
+        transaction: t,
+      }
+    );
+
+    // Increament quanity
+    await Coupon.increment('quantity', {
+      by: 1,
+      where: {
+        id: couponId,
+      },
+      transaction: t,
+    });
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: createdCouponItem,
+    });
+  } catch (err) {
+    await t.rollback();
     next(err);
   }
 };
