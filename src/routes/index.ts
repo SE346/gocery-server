@@ -8,6 +8,7 @@ import addressRoute from './address.route';
 import userRoute from './user.route';
 import orderRoute from './order.route';
 import couponRoute from './coupon.route';
+import statisticRoute from './statistic.route';
 import apiDocsRoute from './api-docs.route';
 
 const route = (app: Express) => {
@@ -21,6 +22,7 @@ const route = (app: Express) => {
   app.use('/user', userRoute);
   app.use('/order', orderRoute);
   app.use('/coupon', couponRoute);
+  app.use('/statistic', statisticRoute);
 };
 
 export default route;
