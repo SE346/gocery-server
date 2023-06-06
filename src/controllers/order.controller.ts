@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Product, Order, OrderDetail, Address, Cart } from '../models';
+import { Product, Order, OrderDetail, Address, Cart, ProductImg } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
@@ -13,6 +13,7 @@ import {
   calculatePriceOnOrderCart,
   checkCartQuantity,
   checkQuantity,
+  formatOrderItem,
   formattedOrderDetail,
   orderDetailMappingFromCart,
   recalculateQuantityInventory,
@@ -40,6 +41,14 @@ export const getAllOrderController = async (
               attributes: {
                 exclude: ['categoryId', 'quantity', 'createdAt', 'updatedAt'],
               },
+              include: [
+                {
+                  model: ProductImg,
+                  where: {
+                    index: 1,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -52,10 +61,19 @@ export const getAllOrderController = async (
       ],
     });
 
+    const orderListFormat = orderList.map<object>((item) => {
+      const orderDetailListFormat = formatOrderItem(item.dataValues.orderDetailList);
+
+      return {
+        ...item.dataValues,
+        orderDetailList: orderDetailListFormat,
+      };
+    });
+
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
-      data: orderList,
+      data: orderListFormat,
     });
   } catch (err) {
     next(err);
@@ -88,6 +106,14 @@ export const getAllOrderBelongToUserController = async (
               attributes: {
                 exclude: ['categoryId', 'quantity', 'createdAt', 'updatedAt'],
               },
+              include: [
+                {
+                  model: ProductImg,
+                  where: {
+                    index: 1,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -100,10 +126,19 @@ export const getAllOrderBelongToUserController = async (
       ],
     });
 
+    const orderListFormat = orderList.map<object>((item) => {
+      const orderDetailListFormat = formatOrderItem(item.dataValues.orderDetailList);
+
+      return {
+        ...item.dataValues,
+        orderDetailList: orderDetailListFormat,
+      };
+    });
+
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
-      data: orderList,
+      data: orderListFormat,
     });
   } catch (err) {
     next(err);
@@ -442,6 +477,14 @@ export const getSingleOrderByIdController = async (
               attributes: {
                 exclude: ['categoryId', 'quantity', 'createdAt', 'updatedAt'],
               },
+              include: [
+                {
+                  model: ProductImg,
+                  where: {
+                    index: 1,
+                  },
+                },
+              ],
             },
           ],
         },
@@ -461,7 +504,10 @@ export const getSingleOrderByIdController = async (
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
-      data: order,
+      data: {
+        ...order.dataValues,
+        orderDetailList: formatOrderItem(order.dataValues.orderDetailList),
+      },
     });
   } catch (err) {
     next(err);

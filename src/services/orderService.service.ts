@@ -119,3 +119,18 @@ export const recalculateQuantityInventoryCart = (product: Product, cartList: Car
   const quantity = findQuantityInRequiredListCart(cartList, product.id);
   return product.quantity - quantity;
 };
+
+export const formatOrderItem = (orderDetailList: OrderDetail[]) => {
+  const orderDetailListFormat = orderDetailList.map((item: OrderDetail) => {
+    return {
+      ...item.dataValues,
+      product: {
+        ...item.dataValues.product.dataValues,
+        thumbnail: item.dataValues.product.productImgList[0].imgUrl,
+        productImgList: undefined,
+      },
+    };
+  });
+
+  return orderDetailListFormat;
+};
