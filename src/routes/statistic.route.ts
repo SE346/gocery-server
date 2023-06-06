@@ -1,10 +1,16 @@
 import { Router } from 'express';
 import { verifyAccessToken, verifyAdminAccessToken } from '../utils/jwt_service';
-import { statisticController } from '../controllers/statistic.controller';
+import {
+  statisticController,
+  statisticDeprecatedController,
+} from '../controllers/statistic.controller';
 
 const router: Router = Router();
 
-// [GET] /statictis -> Get all user
+// [GET] /statictis -> Get statisctic (Deprecated)
+router.get('/deprecated', verifyAccessToken, verifyAdminAccessToken, statisticDeprecatedController);
+
+// [GET] /statictis -> Get statisctic
 router.get('/', verifyAccessToken, verifyAdminAccessToken, statisticController);
 
 export default router;

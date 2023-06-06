@@ -4,9 +4,9 @@ import { Order, Product, User, UserToRole } from '../models';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
 import { sequelize } from '../config/sequelize';
-import { getOrderByType } from '../services/statisticService.service';
+import { getOrderByType, getStatistic } from '../services/statisticService.service';
 
-type statisticRequest = Request<
+type statisticDeprecatedRequest = Request<
   unknown,
   unknown,
   {
@@ -30,8 +30,8 @@ interface DateObject {
   year?: number;
 }
 
-export const statisticController = async (
-  req: statisticRequest,
+export const statisticDeprecatedController = async (
+  req: statisticDeprecatedRequest,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
@@ -83,6 +83,88 @@ export const statisticController = async (
       statusCode: 200,
       message: 'Success',
       data: types === 'all' ? { countedUser, countedProduct, ...order } : { ...order },
+    });
+  } catch (err) {
+    await t.rollback();
+    next(err);
+  }
+};
+
+type statisticRequest = Request<
+  unknown,
+  unknown,
+  {
+    startDate: string;
+    endDate: string;
+  },
+  {
+    types: statisticTypeQuery;
+  }
+>;
+
+enum statisticTypeQuery {
+  OVERVIEW = 'overview',
+  DETAIL = 'detail',
+}
+
+interface RangeDate {
+  startDate: string;
+  endDate: string;
+}
+
+export const statisticController = async (
+  req: statisticRequest,
+  res: Response<ResJSON>,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    const { types } = req.query;
+    const date: RangeDate = req.body;
+
+    // Check type
+    if (!Object.values(statisticTypeQuery).includes(types)) {
+      throw createError.BadRequest(
+        'types query parameter only take 2 values: "overview", "detail"'
+      );
+    }
+
+    let startDate, endDate;
+
+    if (types === 'overview') {
+      startDate = '2010-01-01T00:00:00.000Z';
+      endDate = '2030-01-01T00:00:00.000Z';
+    } else {
+      if (!date.endDate || !date.startDate) {
+        throw createError.BadRequest('Missing params');
+      }
+      startDate = date.startDate;
+      endDate = date.endDate;
+    }
+
+    // Count for user
+    const countedUser = await UserToRole.count({
+      where: {
+        roleId: 2,
+      },
+      transaction: t,
+    });
+
+    // Count for product
+    const countedProduct = await Product.count({ transaction: t });
+
+    const order = await getStatistic(types, t, { startDate, endDate });
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data:
+        types === 'overview'
+          ? { users: countedUser, products: countedProduct, ...order }
+          : { ...order },
     });
   } catch (err) {
     await t.rollback();

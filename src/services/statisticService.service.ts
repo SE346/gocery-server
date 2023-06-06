@@ -8,10 +8,20 @@ enum typeQuery {
   YEAR = 'year',
 }
 
+enum statisticTypeQuery {
+  OVERVIEW = 'overview',
+  DETAIL = 'detail',
+}
+
 interface DateObject {
   day?: number;
   month?: number;
   year?: number;
+}
+
+interface RangeDate {
+  startDate: string;
+  endDate: string;
 }
 
 interface OrderByType {
@@ -78,6 +88,71 @@ export const getOrderByType = async (
   date?: DateObject
 ): Promise<OrderByType> => {
   const { startDate, endDate } = findDate(types, date);
+
+  // Count revenue
+  const revenue = await Order.sum('total', {
+    where: {
+      orderDate: {
+        [Op.gte]: startDate,
+        [Op.lte]: endDate,
+      },
+    },
+  });
+
+  // Count finished transaction
+  const countedFinishedTransaction = await Order.count({
+    where: {
+      status: 'Finished',
+      orderDate: {
+        [Op.gte]: startDate,
+        [Op.lte]: endDate,
+      },
+    },
+    transaction: t,
+  });
+
+  // Count inprogress transaction
+  const countedInprogressTransaction = await Order.count({
+    where: {
+      status: 'In Progress',
+      orderDate: {
+        [Op.gte]: startDate,
+        [Op.lte]: endDate,
+      },
+    },
+    transaction: t,
+  });
+
+  // Count cancelled transaction
+  const countedCancelledTransaction = await Order.count({
+    where: {
+      status: 'Cancelled',
+      orderDate: {
+        [Op.gte]: startDate,
+        [Op.lte]: endDate,
+      },
+    },
+    transaction: t,
+  });
+
+  return {
+    revenue: revenue,
+    transactions: {
+      total:
+        countedFinishedTransaction + countedCancelledTransaction + countedInprogressTransaction,
+      finished: countedFinishedTransaction,
+      inprogress: countedInprogressTransaction,
+      cancelled: countedCancelledTransaction,
+    },
+  };
+};
+
+export const getStatistic = async (
+  types: statisticTypeQuery,
+  t: Transaction,
+  date: RangeDate
+): Promise<OrderByType> => {
+  const { startDate, endDate } = date;
 
   // Count revenue
   const revenue = await Order.sum('total', {
