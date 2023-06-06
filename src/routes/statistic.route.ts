@@ -11,6 +11,6 @@ const router: Router = Router();
 router.get('/deprecated', verifyAccessToken, verifyAdminAccessToken, statisticDeprecatedController);
 
 // [GET] /statictis -> Get statisctic
-router.get('/', verifyAccessToken, verifyAdminAccessToken, statisticController);
+router.post('/', verifyAccessToken, verifyAdminAccessToken, statisticController);
 
 export default router;
