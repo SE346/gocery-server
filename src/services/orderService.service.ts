@@ -44,7 +44,13 @@ export const calculatePriceOnOrder = (
   productList: Product[]
 ) => {
   const totalPriceBeforeVAT = productList.reduce((acc, curItem) => {
-    return acc + curItem.price * findQuantity(productListRequired, curItem.id).quantity;
+    return (
+      acc +
+      curItem.price *
+        findQuantity(productListRequired, curItem.id).quantity *
+        (100 - (curItem.discount || 0)) *
+        0.01
+    );
   }, 0);
 
   const totalPriceAfterVAT = Math.round(totalPriceBeforeVAT * 1.1 * 100) / 100;
@@ -54,7 +60,13 @@ export const calculatePriceOnOrder = (
 
 export const calculatePriceOnOrderCart = (cartList: Cart[], productList: Product[]) => {
   const totalPriceBeforeVAT = productList.reduce((acc, curItem) => {
-    return acc + curItem.price * findCartQuantity(cartList, curItem.id).quantity;
+    return (
+      acc +
+      curItem.price *
+        findCartQuantity(cartList, curItem.id).quantity *
+        (100 - (curItem.discount || 0)) *
+        0.01
+    );
   }, 0);
 
   const totalPriceAfterVAT = Math.round(totalPriceBeforeVAT * 1.1 * 100) / 100;
@@ -65,7 +77,9 @@ export const calculatePriceOnOrderCart = (cartList: Cart[], productList: Product
 const findPrice = (productList: Product[], id: string) => {
   const productIdentify = productList.find((item) => item.id === id)!;
 
-  return productIdentify.price;
+  const price = productIdentify.price * (100 - (productIdentify.discount || 0)) * 0.01;
+
+  return price;
 };
 
 export const formattedOrderDetail = (
@@ -75,7 +89,7 @@ export const formattedOrderDetail = (
 ): any[] => {
   productListRequired.forEach((item) => {
     item.productId = item.id;
-    item.price = item.quantity * findPrice(productList, item.id) * 1.1;
+    item.price = +(item.quantity * findPrice(productList, item.id) * 1.1).toFixed(3);
     item.orderId = orderId;
 
     delete item.id;
@@ -93,7 +107,7 @@ export const orderDetailMappingFromCart = (
     orderId,
     productId: item.productId,
     quantity: item.quantity,
-    price: item.quantity * findPrice(productList, item.productId) * 1.1,
+    price: +(item.quantity * findPrice(productList, item.productId) * 1.1).toFixed(3),
   }));
 
   return orderDetailList;
