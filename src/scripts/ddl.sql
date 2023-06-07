@@ -213,7 +213,7 @@ CREATE TABLE "order" (
     coupon_item_id INTEGER REFERENCES coupon_item(coupon_item_id),
 	status TEXT NOT NULL,
     total FLOAT NOT NULL,
-    order_date TIMESTAMP NOT NULL,
+    order_date TIMESTAMP WITH TIME ZONE NOT NULL,
     delivery_date TIMESTAMP NOT NULL,
     shipping_fee INTEGER NOT NULL,
     phone_num VARCHAR(10) NOT NULL,
@@ -223,6 +223,10 @@ CREATE TABLE "order" (
 
     PRIMARY KEY (order_id)
 );
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON "order"
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
 
 -- CREATE TABLE ORDER_DETAIL:
 CREATE TABLE order_detail (
@@ -235,3 +239,7 @@ CREATE TABLE order_detail (
 
     PRIMARY  KEY (order_id, product_id)
 );
+CREATE TRIGGER update_db_timestamp BEFORE UPDATE
+ON order_detail
+FOR EACH ROW
+EXECUTE PROCEDURE update_timestamp();
