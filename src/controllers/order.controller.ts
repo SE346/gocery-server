@@ -1,5 +1,14 @@
 import { Request, Response, NextFunction } from 'express';
-import { Product, Order, OrderDetail, Address, Cart, ProductImg } from '../models';
+import {
+  Product,
+  Order,
+  OrderDetail,
+  Address,
+  Cart,
+  ProductImg,
+  CouponItem,
+  Coupon,
+} from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
@@ -11,6 +20,8 @@ import { productOrderDetailListSchema } from '../utils/schema';
 import {
   calculatePriceOnOrder,
   calculatePriceOnOrderCart,
+  calculatePriceOnOrderCartNoVAT,
+  calculatePriceOnOrderNoVAT,
   checkCartQuantity,
   checkQuantity,
   formatOrderItem,
@@ -20,6 +31,7 @@ import {
   recalculateQuantityInventoryCart,
 } from '../services/orderService.service';
 import { v4 as uuid } from 'uuid';
+import { assertCouponValidTime } from '../services/couponService.service';
 
 export const getAllOrderController = async (
   req: Request,
@@ -194,6 +206,7 @@ export const createOrderWithoutCartController = async (
     {},
     {
       addressId: string;
+      code: string;
       phoneNum: string;
       deliveryDate: Date;
       paymentMethod: PaymentType;
@@ -209,7 +222,7 @@ export const createOrderWithoutCartController = async (
     // Get userMail from previous middleware
     const userMail = res.locals.payload.user.mail;
 
-    const { addressId, phoneNum, deliveryDate, paymentMethod, productList } = req.body;
+    const { addressId, code, phoneNum, deliveryDate, paymentMethod, productList } = req.body;
 
     if (!addressId || !phoneNum || !deliveryDate || !paymentMethod || !productList) {
       throw createError.BadRequest('Missing params');
@@ -220,6 +233,67 @@ export const createOrderWithoutCartController = async (
       throw createError.BadRequest(
         'paymentMethod in body only take 3 values: Momo, Zalopay, Credit'
       );
+    }
+
+    let coupon: Coupon | null = null;
+    let counonItemId: number | null = null;
+
+    // Check coupon item
+    if (code || code === '') {
+      // Check coupon is exist
+      const couponItem = await CouponItem.findOne({
+        where: {
+          code,
+        },
+        transaction: t,
+      });
+
+      if (!couponItem) {
+        throw createError.BadRequest('Coupon invalid');
+      }
+      counonItemId = couponItem.id;
+
+      // Check expired
+      coupon = await Coupon.findByPk(couponItem.couponId, {
+        transaction: t,
+      });
+
+      if (!coupon) {
+        throw createError.InternalServerError('coupon = null');
+      }
+
+      const isValidTime = assertCouponValidTime(coupon);
+      if (!isValidTime) {
+        throw createError.Conflict('Coupon expired');
+      }
+
+      // Enable
+      const couponIsActive = couponItem.isActive;
+      if (!couponIsActive) {
+        throw createError.BadRequest('Coupon inactive');
+      }
+
+      // Approve coupon
+      await CouponItem.update(
+        {
+          isActive: false,
+        },
+        {
+          where: {
+            code,
+          },
+          transaction: t,
+        }
+      );
+
+      // Decrement
+      await Coupon.decrement('quantity', {
+        by: 1,
+        where: {
+          id: couponItem.couponId,
+        },
+        transaction: t,
+      });
     }
 
     const address = await Address.findOne({
@@ -252,15 +326,39 @@ export const createOrderWithoutCartController = async (
       throw createError.Conflict('Required product quantity greater than available product');
     }
 
-    const totalPrice = calculatePriceOnOrder(productList, productListExist) + 2;
+    let totalPrice = calculatePriceOnOrder(productList, productListExist) + 2;
+    if (code) {
+      if (!coupon) {
+        throw createError.InternalServerError('coupon = null');
+      }
+
+      const orderBeforeVAT = calculatePriceOnOrderNoVAT(productList, productListExist);
+      const priceAccepted = coupon.pricePointAccept;
+
+      if (orderBeforeVAT <= priceAccepted) {
+        throw createError.Conflict('Not enough to sue to apply');
+      }
+
+      const couponType = coupon.couponType;
+      if (couponType === 'DiscountValue') {
+        totalPrice = totalPrice - coupon.discount;
+      }
+      if (couponType === 'DiscountPercent') {
+        totalPrice = totalPrice * (100 - coupon.discount) * 0.01;
+      }
+      if (couponType === 'Freeship') {
+        totalPrice = totalPrice - 2;
+      }
+    }
 
     const createdOrder = await Order.create(
       {
         id: uuid(),
         userMail,
         addressId,
+        couponItemId: code ? counonItemId : null,
         status: 'In Progress',
-        total: totalPrice,
+        total: totalPrice.toFixed(2),
         orderDate: new Date(),
         deliveryDate,
         phoneNum,
@@ -313,6 +411,7 @@ export const createOrderWithCartController = async (
     {},
     {
       addressId: string;
+      code: string;
       phoneNum: string;
       deliveryDate: Date;
       paymentMethod: PaymentType;
@@ -327,7 +426,7 @@ export const createOrderWithCartController = async (
     // Get userMail from previous middleware
     const userMail = res.locals.payload.user.mail;
 
-    const { addressId, phoneNum, deliveryDate, paymentMethod } = req.body;
+    const { addressId, code, phoneNum, deliveryDate, paymentMethod } = req.body;
 
     if (!addressId || !phoneNum || !deliveryDate || !paymentMethod) {
       throw createError.BadRequest('Missing params');
@@ -338,6 +437,67 @@ export const createOrderWithCartController = async (
       throw createError.BadRequest(
         'paymentMethod in body only take 3 values: Momo, Zalopay, Credit'
       );
+    }
+
+    let coupon: Coupon | null = null;
+    let counonItemId: number | null = null;
+
+    // Check coupon item
+    if (code || code === '') {
+      // Check coupon is exist
+      const couponItem = await CouponItem.findOne({
+        where: {
+          code,
+        },
+        transaction: t,
+      });
+
+      if (!couponItem) {
+        throw createError.BadRequest('Coupon invalid');
+      }
+      counonItemId = couponItem.id;
+
+      // Check expired
+      coupon = await Coupon.findByPk(couponItem.couponId, {
+        transaction: t,
+      });
+
+      if (!coupon) {
+        throw createError.InternalServerError('coupon = null');
+      }
+
+      const isValidTime = assertCouponValidTime(coupon);
+      if (!isValidTime) {
+        throw createError.Conflict('Coupon expired');
+      }
+
+      // Enable
+      const couponIsActive = couponItem.isActive;
+      if (!couponIsActive) {
+        throw createError.BadRequest('Coupon inactive');
+      }
+
+      // Approve coupon
+      await CouponItem.update(
+        {
+          isActive: false,
+        },
+        {
+          where: {
+            code,
+          },
+          transaction: t,
+        }
+      );
+
+      // Decrement
+      await Coupon.decrement('quantity', {
+        by: 1,
+        where: {
+          id: couponItem.couponId,
+        },
+        transaction: t,
+      });
     }
 
     const address = await Address.findOne({
@@ -378,15 +538,39 @@ export const createOrderWithCartController = async (
       throw createError.Conflict('Product quantity in cart greater than available product');
     }
 
-    const totalPrice = calculatePriceOnOrderCart(cart, productListExist) + 2;
+    let totalPrice = calculatePriceOnOrderCart(cart, productListExist) + 2;
+    if (code) {
+      if (!coupon) {
+        throw createError.InternalServerError('coupon = null');
+      }
+
+      const orderBeforeVAT = calculatePriceOnOrderCartNoVAT(cart, productListExist);
+      const priceAccepted = coupon.pricePointAccept;
+
+      if (orderBeforeVAT <= priceAccepted) {
+        throw createError.Conflict('Not enough to sue to apply');
+      }
+
+      const couponType = coupon.couponType;
+      if (couponType === 'DiscountValue') {
+        totalPrice = totalPrice - coupon.discount;
+      }
+      if (couponType === 'DiscountPercent') {
+        totalPrice = totalPrice * (100 - coupon.discount) * 0.01;
+      }
+      if (couponType === 'Freeship') {
+        totalPrice = totalPrice - 2;
+      }
+    }
 
     const createdOrder = await Order.create(
       {
         id: uuid(),
         userMail,
         addressId,
+        couponItemId: code ? counonItemId : null,
         status: 'In Progress',
-        total: totalPrice,
+        total: totalPrice.toFixed(2),
         orderDate: new Date(),
         deliveryDate,
         phoneNum,

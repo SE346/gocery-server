@@ -39,6 +39,23 @@ const findCartQuantity = (cartList: Cart[], id: string) => {
   return cartList.find((item) => item.productId === id)!;
 };
 
+export const calculatePriceOnOrderNoVAT = (
+  productListRequired: OrderDetail[],
+  productList: Product[]
+) => {
+  const totalPriceBeforeVAT = productList.reduce((acc, curItem) => {
+    return (
+      acc +
+      curItem.price *
+        findQuantity(productListRequired, curItem.id).quantity *
+        (100 - (curItem.discount || 0)) *
+        0.01
+    );
+  }, 0);
+
+  return totalPriceBeforeVAT;
+};
+
 export const calculatePriceOnOrder = (
   productListRequired: OrderDetail[],
   productList: Product[]
@@ -56,6 +73,20 @@ export const calculatePriceOnOrder = (
   const totalPriceAfterVAT = Math.round(totalPriceBeforeVAT * 1.1 * 100) / 100;
 
   return totalPriceAfterVAT;
+};
+
+export const calculatePriceOnOrderCartNoVAT = (cartList: Cart[], productList: Product[]) => {
+  const totalPriceBeforeVAT = productList.reduce((acc, curItem) => {
+    return (
+      acc +
+      curItem.price *
+        findCartQuantity(cartList, curItem.id).quantity *
+        (100 - (curItem.discount || 0)) *
+        0.01
+    );
+  }, 0);
+
+  return totalPriceBeforeVAT;
 };
 
 export const calculatePriceOnOrderCart = (cartList: Cart[], productList: Product[]) => {

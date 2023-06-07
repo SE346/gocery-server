@@ -1,3 +1,5 @@
+import { Coupon, CouponItem } from '../models';
+
 export const generateRandomString = (): string => {
   const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
   let randomString = '';
@@ -34,4 +36,11 @@ export const assertCodeList = (codeList: string[]): boolean => {
   }
 
   return true;
+};
+
+export const assertCouponValidTime = (coupon: Coupon): boolean => {
+  const endDate = coupon.endDate;
+  const currentDate = new Date();
+
+  return endDate >= currentDate;
 };
