@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Category, Product, Rank, Role, User, UserToRank, UserToRole } from '../models';
+import { Category, Product, ProductImg, Rank, Role, User, UserToRank, UserToRole } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { Op } from 'sequelize';
@@ -126,6 +126,11 @@ export const searchInCategoryController = async (
         ],
         categoryId,
       },
+      include: [
+        {
+          model: ProductImg,
+        },
+      ],
       attributes: {
         exclude: ['createdAt', 'updatedAt'],
       },
