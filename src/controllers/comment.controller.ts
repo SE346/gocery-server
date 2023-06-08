@@ -3,30 +3,35 @@ import { Product, Comment } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
+import { sequelize } from '../config/sequelize';
 
 export const getAllCommentBelongToProductController = async (
   req: Request<{ productId: string }>,
   res: Response<ResJSON>,
   next: NextFunction
 ) => {
-  const { productId } = req.params;
-
-  // Check missing param
-  if (!productId) {
-    throw createError.BadRequest('Missing params');
-  }
-
-  const commentList = await Comment.findAll({
-    where: {
-      productId,
-    },
-  });
-
   try {
+    const { productId } = req.params;
+
+    // Check missing param
+    if (!productId) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    const commentList = await Comment.findAll({
+      where: {
+        productId,
+      },
+    });
+
+    const ratingAverage = +(
+      commentList.reduce((acc, curItem) => acc + curItem.rating, 0) / commentList.length
+    ).toFixed(1);
+
     res.status(200).json({
       statusCode: 200,
       message: 'Success',
-      data: commentList,
+      data: { commentList, ratingAverage },
     });
   } catch (err) {
     next(err);
@@ -63,29 +68,40 @@ export const addCommentController = async (
   res: Response<ResJSON, { payload: IPayload }>,
   next: NextFunction
 ) => {
+  const t = await sequelize.transaction();
+
   try {
     // Get userMail from previous middleware
     const userMail = res.locals.payload.user.mail;
 
-    const { productId, content } = req.body;
+    const { productId, content, rating, image } = req.body;
 
-    if (!productId || !content) {
+    if (!productId || !content || !rating) {
       throw createError.BadRequest('Missing params');
     }
 
     // Check product exist
-    const product = await Product.findByPk(productId);
+    const product = await Product.findByPk(productId, { transaction: t });
 
     if (!product) {
       throw createError.Conflict('Product with id not exist');
     }
 
     // Create new comment
-    const createdComment = await Comment.create({
-      productId,
-      userMail,
-      content,
-    });
+    const createdComment = await Comment.create(
+      {
+        productId,
+        userMail,
+        content,
+        rating,
+        image,
+      },
+      {
+        transaction: t,
+      }
+    );
+
+    await t.commit();
 
     res.status(201).json({
       statusCode: 201,
@@ -93,6 +109,7 @@ export const addCommentController = async (
       data: createdComment,
     });
   } catch (err) {
+    await t.rollback();
     next(err);
   }
 };
@@ -102,6 +119,8 @@ export const updateCommentController = async (
   res: Response<ResJSON, { payload: IPayload }>,
   next: NextFunction
 ) => {
+  const t = await sequelize.transaction();
+
   try {
     // Get userMail from previous middleware
     const userMail = res.locals.payload.user.mail;
@@ -109,9 +128,11 @@ export const updateCommentController = async (
     const { commentId: unconvertCommentId } = req.params;
     const commentId: number = +unconvertCommentId;
 
-    const { content } = req.body;
+    const { content, rating, image } = req.body;
 
-    const comment = await Comment.findByPk(commentId);
+    const comment = await Comment.findByPk(commentId, {
+      transaction: t,
+    });
 
     if (!comment) {
       throw createError.Conflict('Comment with id not exist');
@@ -124,14 +145,19 @@ export const updateCommentController = async (
     const [_, updatedComment] = await Comment.update(
       {
         content,
+        rating,
+        image,
       },
       {
         where: {
           id: commentId,
         },
+        transaction: t,
         returning: true,
       }
     );
+
+    await t.commit();
 
     res.status(200).json({
       statusCode: 200,
@@ -139,6 +165,7 @@ export const updateCommentController = async (
       data: updatedComment[0].dataValues,
     });
   } catch (err) {
+    await t.rollback();
     next(err);
   }
 };

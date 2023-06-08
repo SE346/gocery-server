@@ -62,8 +62,8 @@ insert into cart(product_id, user_mail, quantity) values ('#123', '20521366@gm.u
 insert into cart(product_id, user_mail, quantity) values ('#124', '20521366@gm.uit.edu.vn', 2);
 
 -- Comment table
-insert into comment(product_id, user_mail, content) values ('#123', '20521366@gm.uit.edu.vn', 'Perfect');
-insert into comment(product_id, user_mail, content) values ('#124', '20521366@gm.uit.edu.vn', 'Good');
+insert into comment(product_id, user_mail, content, rating, image) values ('#123', '20521366@gm.uit.edu.vn', 'Perfect', 4, 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg');
+insert into comment(product_id, user_mail, content, rating, image) values ('#124', '20521366@gm.uit.edu.vn', 'Good', 5, null);
 
 -- Address table
 insert into address(user_mail, name, province_id, province_name, district_id, district_name, ward_code, ward_name, detail, phone_num) values ('20521366@gm.uit.edu.vn', 'Chị Hưng', 262, 'Tỉnh Bình Định', 1662, 'Thành phố Quy Nhơn', '370115', 'Phường Trần Phú', '41.C Nguyễn Lạc', '0967781796');

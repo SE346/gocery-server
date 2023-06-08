@@ -142,6 +142,8 @@ CREATE TABLE comment (
     user_mail TEXT NOT NULL REFERENCES users(mail),
     product_id TEXT NOT NULL REFERENCES product(product_id),
 	content TEXT NOT NULL,
+    rating FLOAT NOT NULL,
+    image TEXT,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
 	updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
