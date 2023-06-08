@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { Product, Comment } from '../models';
+import { Product, Comment, User } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
 import { IPayload } from '../utils/jwt_service';
@@ -22,6 +22,12 @@ export const getAllCommentBelongToProductController = async (
       where: {
         productId,
       },
+      include: [
+        {
+          model: User,
+          attributes: ['firstName', 'lastName', 'avatar'],
+        },
+      ],
     });
 
     const ratingAverage = +(
@@ -47,7 +53,14 @@ export const getSingleCommentByIdController = async (
     const { commentId: unconvertCommentId } = req.params;
     const commentId: number = +unconvertCommentId;
 
-    const comment = await Comment.findByPk(commentId);
+    const comment = await Comment.findByPk(commentId, {
+      include: [
+        {
+          model: User,
+          attributes: ['firstName', 'lastName', 'avatar'],
+        },
+      ],
+    });
 
     if (!comment) {
       throw createError.NotFound('Comment with id not found');

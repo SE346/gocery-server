@@ -6,6 +6,7 @@ import {
   UpdatedAt,
   DataType,
   ForeignKey,
+  BelongsTo,
 } from 'sequelize-typescript';
 import { User, Product } from './';
 
@@ -14,6 +15,9 @@ class Comment extends Model {
   // Columns
   @Column({ type: DataType.INTEGER, primaryKey: true, autoIncrement: true, field: 'comment_id' })
   id!: number;
+
+  @BelongsTo(() => User)
+  user!: User;
 
   @ForeignKey(() => User)
   @Column({ type: DataType.STRING, field: 'user_mail' })

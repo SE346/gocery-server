@@ -36,34 +36,34 @@ insert into category(category_name, category_image) values ('Frozen', 'https://i
 insert into category(category_name, category_image) values ('Organic', 'https://images.unsplash.com/photo-1553787434-45e1d245bfbb?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8OXx8b3JnYW5pY3xlbnwwfHwwfHw%3D&auto=format&fit=crop&w=800&q=60');
 
 -- Product table
-insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#123', 1, 'Xà lách búp mỡ thuỷ canh từ 200g', 10, '', 17, 29, 'pack');
-insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#124', 1, 'Rau má đất 150g', 5, '', 15, 0, 'pack');
-insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('#125', 2, 'Đùi bò nhập khẩu đông lạnh 500gr', 7, '', 109, 15, 'pack');
+insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('acf02774-0617-11ee-be56-0242ac120002', 1, 'Xà lách búp mỡ thuỷ canh từ 200g', 10, '', 17, 29, 'pack');
+insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('d390e7b0-0617-11ee-be56-0242ac120002', 1, 'Rau má đất 150g', 5, '', 15, 0, 'pack');
+insert into product(product_id, category_id, name, quantity, description, price, discount, unit) values ('de4d84ba-0617-11ee-be56-0242ac120002', 2, 'Đùi bò nhập khẩu đông lạnh 500gr', 7, '', 109, 15, 'pack');
 
 
 -- ProductImg table
-insert into product_img(product_id, img_url, index) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202302251513359670.jpg', 1);
-insert into product_img(product_id, img_url, index) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837370210.jpg', 2);
-insert into product_img(product_id, img_url, index) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837374315.jpg', 3);
-insert into product_img(product_id, img_url, index) values ('#123', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837377272.jpg', 4);
+insert into product_img(product_id, img_url, index) values ('acf02774-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202302251513359670.jpg', 1);
+insert into product_img(product_id, img_url, index) values ('acf02774-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837370210.jpg', 2);
+insert into product_img(product_id, img_url, index) values ('acf02774-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837374315.jpg', 3);
+insert into product_img(product_id, img_url, index) values ('acf02774-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8820/303267/bhx/xa-lach-bup-mo-thuy-canh-cay-tu-230g-202303170837377272.jpg', 4);
 
-insert into product_img(product_id, img_url, index) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021541352775.jpg', 1);
-insert into product_img(product_id, img_url, index) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536577501.jpg', 2);
-insert into product_img(product_id, img_url, index) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536565210.jpg', 3);
-insert into product_img(product_id, img_url, index) values ('#124', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536580923.jpg', 4);
+insert into product_img(product_id, img_url, index) values ('d390e7b0-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021541352775.jpg', 1);
+insert into product_img(product_id, img_url, index) values ('d390e7b0-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536577501.jpg', 2);
+insert into product_img(product_id, img_url, index) values ('d390e7b0-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536565210.jpg', 3);
+insert into product_img(product_id, img_url, index) values ('d390e7b0-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/12439/303371/bhx/rau-ma-dat-toan-phat-khay-150g-202303021536580923.jpg', 4);
 
-insert into product_img(product_id, img_url, index) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-500gr-202303170948379636.jpg', 1);
-insert into product_img(product_id, img_url, index) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908085639.jpg', 2);
-insert into product_img(product_id, img_url, index) values ('#125', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg',3);
+insert into product_img(product_id, img_url, index) values ('de4d84ba-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-500gr-202303170948379636.jpg', 1);
+insert into product_img(product_id, img_url, index) values ('de4d84ba-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908085639.jpg', 2);
+insert into product_img(product_id, img_url, index) values ('de4d84ba-0617-11ee-be56-0242ac120002', 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg',3);
 
 
 -- Cart table
-insert into cart(product_id, user_mail, quantity) values ('#123', '20521366@gm.uit.edu.vn', 1);
-insert into cart(product_id, user_mail, quantity) values ('#124', '20521366@gm.uit.edu.vn', 2);
+insert into cart(product_id, user_mail, quantity) values ('acf02774-0617-11ee-be56-0242ac120002', '20521366@gm.uit.edu.vn', 1);
+insert into cart(product_id, user_mail, quantity) values ('d390e7b0-0617-11ee-be56-0242ac120002', '20521366@gm.uit.edu.vn', 2);
 
 -- Comment table
-insert into comment(product_id, user_mail, content, rating, image) values ('#123', '20521366@gm.uit.edu.vn', 'Perfect', 4, 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg');
-insert into comment(product_id, user_mail, content, rating, image) values ('#124', '20521366@gm.uit.edu.vn', 'Good', 5, null);
+insert into comment(product_id, user_mail, content, rating, image) values ('acf02774-0617-11ee-be56-0242ac120002', '20521366@gm.uit.edu.vn', 'Perfect', 4, 'https://cdn.tgdd.vn/Products/Images/8139/297313/bhx/dui-bo-nhap-khau-dong-lanh-tui-500g-202212200908088636.jpg');
+insert into comment(product_id, user_mail, content, rating, image) values ('d390e7b0-0617-11ee-be56-0242ac120002', '20521366@gm.uit.edu.vn', 'Good', 5, null);
 
 -- Address table
 insert into address(user_mail, name, province_id, province_name, district_id, district_name, ward_code, ward_name, detail, phone_num) values ('20521366@gm.uit.edu.vn', 'Chị Hưng', 262, 'Tỉnh Bình Định', 1662, 'Thành phố Quy Nhơn', '370115', 'Phường Trần Phú', '41.C Nguyễn Lạc', '0967781796');
@@ -88,9 +88,9 @@ insert into "order" (order_id, user_mail, address_id, status, total, order_date,
 insert into "order" (order_id, user_mail, address_id, status, total, order_date, delivery_date, shipping_fee, phone_num, payment_method) values ('cc800770-fcf4-11ed-a644-005056c00001', '20521366@gm.uit.edu.vn', 1, 'Cancelled', 116.56, '2023-01-20', '2023-01-23', 5, '0967781796', 'Cash');
 
 -- OrderDetail table
-insert into order_detail(order_id, product_id, quantity, price) values ('0a9d302e-fcf4-11ed-a641-005056c00001', '#123', 1, 123.45);
-insert into order_detail(order_id, product_id, quantity, price) values ('bd70d908-fcf4-11ed-a642-005056c00001', '#123', 1, 123.45);
-insert into order_detail(order_id, product_id, quantity, price) values ('bd70d908-fcf4-11ed-a642-005056c00001', '#124', 2, 233.12);
-insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#123', 1, 123.45);
-insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', '#125', 1, 45.44);
-insert into order_detail(order_id, product_id, quantity, price) values ('cc800770-fcf4-11ed-a644-005056c00001', '#124', 1, 116.56);
+insert into order_detail(order_id, product_id, quantity, price) values ('0a9d302e-fcf4-11ed-a641-005056c00001', 'acf02774-0617-11ee-be56-0242ac120002', 1, 123.45);
+insert into order_detail(order_id, product_id, quantity, price) values ('bd70d908-fcf4-11ed-a642-005056c00001', 'acf02774-0617-11ee-be56-0242ac120002', 1, 123.45);
+insert into order_detail(order_id, product_id, quantity, price) values ('bd70d908-fcf4-11ed-a642-005056c00001', 'd390e7b0-0617-11ee-be56-0242ac120002', 2, 233.12);
+insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', 'acf02774-0617-11ee-be56-0242ac120002', 1, 123.45);
+insert into order_detail(order_id, product_id, quantity, price) values ('c27062d4-fcf4-11ed-a643-005056c00001', 'de4d84ba-0617-11ee-be56-0242ac120002', 1, 45.44);
+insert into order_detail(order_id, product_id, quantity, price) values ('cc800770-fcf4-11ed-a644-005056c00001', 'd390e7b0-0617-11ee-be56-0242ac120002', 1, 116.56);
