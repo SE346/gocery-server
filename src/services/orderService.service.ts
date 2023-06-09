@@ -179,3 +179,44 @@ export const formatOrderItem = (orderDetailList: OrderDetail[]) => {
 
   return orderDetailListFormat;
 };
+
+enum SortType {
+  NEAREST = 'nearest',
+  FAREST = 'farest',
+}
+
+export const sortOrderMapping = (sortType: SortType) => {
+  let sortMapping;
+
+  switch (sortType) {
+    case SortType.NEAREST:
+      sortMapping = 'DESC';
+      break;
+    case SortType.FAREST:
+      sortMapping = 'ASC';
+      break;
+    default:
+      sortMapping = 'DESC';
+  }
+
+  return sortMapping;
+};
+
+enum FilterType {
+  ALL = 'All',
+  FINISHED = 'Finished',
+  IN_PROGRESS = 'In Progress',
+  CANCELLED = 'Cancelled',
+}
+
+export const isFilterValid = (filter: FilterType[]): Boolean => {
+  let isValid = true;
+  filter.forEach((filterItem) => {
+    if (!Object.values(FilterType).includes(filterItem)) {
+      isValid = false;
+      return;
+    }
+  });
+
+  return isValid;
+};

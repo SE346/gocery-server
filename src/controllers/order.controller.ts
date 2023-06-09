@@ -26,20 +26,74 @@ import {
   checkQuantity,
   formatOrderItem,
   formattedOrderDetail,
+  isFilterValid,
   orderDetailMappingFromCart,
   recalculateQuantityInventory,
   recalculateQuantityInventoryCart,
+  sortOrderMapping,
 } from '../services/orderService.service';
 import { v4 as uuid } from 'uuid';
 import { assertCouponValidTime } from '../services/couponService.service';
 
+enum FilterType {
+  ALL = 'All',
+  FINISHED = 'Finished',
+  IN_PROGRESS = 'In Progress',
+  CANCELLED = 'Cancelled',
+}
+enum SortType {
+  NEAREST = 'nearest',
+  FAREST = 'farest',
+}
+type getAllOrderRequest = Request<
+  unknown,
+  unknown,
+  unknown,
+  {
+    limit: string;
+    page: string;
+    sort: SortType;
+    filter: FilterType[];
+  }
+>;
+
 export const getAllOrderController = async (
-  req: Request,
+  req: getAllOrderRequest,
   res: Response<ResJSON, { payload: IPayload }>,
   next: NextFunction
 ) => {
   try {
+    let { limit: unconvertLimit, page: unconvertPage, sort, filter } = req.query;
+    if (typeof filter === 'string') {
+      filter = [filter];
+    }
+
+    if (!unconvertLimit || !unconvertPage) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    const limit: number = +unconvertLimit;
+    const page: number = +unconvertPage;
+
+    if (sort && !Object.values(SortType).includes(sort)) {
+      throw createError.BadRequest('Sort only take 2 values: "nearest", "farest"');
+    }
+    if (filter && !isFilterValid(filter)) {
+      throw createError.BadRequest(
+        'Filter only take 4 values: "All", "Finished", "In Progress", "Cancelled"'
+      );
+    }
+
+    const sortBy = sort ? sort : SortType.NEAREST;
+    const filterBy: FilterType[] =
+      !filter || filter.includes(FilterType.ALL)
+        ? [FilterType.FINISHED, FilterType.IN_PROGRESS, FilterType.CANCELLED]
+        : filter;
+
     const orderList = await Order.findAll({
+      where: {
+        status: filterBy,
+      },
       attributes: {
         exclude: ['addressId', 'userMail', 'createdAt', 'updatedAt'],
       },
@@ -47,15 +101,21 @@ export const getAllOrderController = async (
         {
           model: OrderDetail,
           attributes: ['quantity', 'price'],
+          required: true,
+          duplicating: false,
           include: [
             {
               model: Product,
+              required: true,
+              duplicating: false,
               attributes: {
                 exclude: ['categoryId', 'quantity', 'createdAt', 'updatedAt'],
               },
               include: [
                 {
                   model: ProductImg,
+                  required: true,
+                  duplicating: false,
                   where: {
                     index: 1,
                   },
@@ -71,6 +131,9 @@ export const getAllOrderController = async (
           },
         },
       ],
+      limit,
+      offset: limit * (page - 1),
+      order: [['orderDate', sortOrderMapping(sortBy)]],
     });
 
     const orderListFormat = orderList.map<object>((item) => {
