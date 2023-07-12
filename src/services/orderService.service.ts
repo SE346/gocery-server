@@ -166,7 +166,9 @@ export const recalculateQuantityInventoryCart = (product: Product, cartList: Car
 };
 
 export const formatOrderItem = (orderDetailList: OrderDetail[]) => {
+  let quantity = 0;
   const orderDetailListFormat = orderDetailList.map((item: OrderDetail) => {
+    quantity = quantity + item.quantity;
     return {
       ...item.dataValues,
       product: {
@@ -177,7 +179,7 @@ export const formatOrderItem = (orderDetailList: OrderDetail[]) => {
     };
   });
 
-  return orderDetailListFormat;
+  return [orderDetailListFormat, quantity];
 };
 
 enum SortType {

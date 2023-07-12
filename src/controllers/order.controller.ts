@@ -202,11 +202,14 @@ export const getAllOrderBelongToUserController = async (
     });
 
     const orderListFormat = orderList.map<object>((item) => {
-      const orderDetailListFormat = formatOrderItem(item.dataValues.orderDetailList);
+      const [orderDetailListFormat, totalQuantity] = formatOrderItem(
+        item.dataValues.orderDetailList
+      );
 
       return {
         ...item.dataValues,
         orderDetailList: orderDetailListFormat,
+        totalQuantity,
       };
     });
 
