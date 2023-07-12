@@ -9,6 +9,7 @@ import {
   getSingleOrderByIdController,
   updateStatusOrderByIdController,
   deleteOrderByIdController,
+  calculateApplyVoucher,
 } from '../controllers/order.controller';
 
 const router: Router = Router();
@@ -21,6 +22,9 @@ router.get('/', verifyAccessToken, getAllOrderBelongToUserController);
 
 // [GET] /pre-order -> Inventory check
 router.get('/pre-order', verifyAccessToken, inventoryCheckController);
+
+// [GET] /pre-order-cp -> Caculate after apply coupon
+router.get('/pre-order-cp', verifyAccessToken, calculateApplyVoucher);
 
 // [POST] /order -> Create order without cart
 router.post('/', verifyAccessToken, createOrderWithoutCartController);

@@ -266,6 +266,124 @@ export const inventoryCheckController = async (
   }
 };
 
+export const calculateApplyVoucher = async (
+  req: Request<
+    {},
+    {},
+    {
+      code: string;
+      productList: OrderDetail[];
+    }
+  >,
+  res: Response,
+  next: NextFunction
+) => {
+  const t = await sequelize.transaction();
+
+  try {
+    const { code, productList } = req.body;
+
+    if (!productList) {
+      throw createError.BadRequest('Missing params');
+    }
+
+    let coupon: Coupon | null = null;
+
+    // Check coupon item
+    if (code || code === '') {
+      // Check coupon is exist
+      const couponItem = await CouponItem.findOne({
+        where: {
+          code,
+        },
+        transaction: t,
+      });
+
+      if (!couponItem) {
+        throw createError.BadRequest('Coupon invalid');
+      }
+
+      // Check expired
+      coupon = await Coupon.findByPk(couponItem.couponId, {
+        transaction: t,
+      });
+
+      if (!coupon) {
+        throw createError.InternalServerError('coupon = null');
+      }
+
+      const isValidTime = assertCouponValidTime(coupon);
+      if (!isValidTime) {
+        throw createError.Conflict('Coupon expired');
+      }
+
+      // Enable
+      const couponIsActive = couponItem.isActive;
+      if (!couponIsActive) {
+        throw createError.BadRequest('Coupon inactive');
+      }
+    }
+
+    // TODO: Validate product list
+    await productOrderDetailListSchema.validateAsync(productList);
+
+    const productListExist = await Product.findAll({
+      where: {
+        id: productList.map((item) => item.id),
+      },
+      raw: true,
+      transaction: t,
+    });
+    if (productListExist.length < productList.length) {
+      throw createError.Conflict('Does not exist an productId in productList body');
+    }
+
+    const isAvailable = checkQuantity(productList, productListExist);
+    if (!isAvailable) {
+      throw createError.Conflict('Required product quantity greater than available product');
+    }
+
+    let cp = {};
+
+    if (code) {
+      if (!coupon) {
+        throw createError.InternalServerError('coupon = null');
+      }
+
+      const couponType = coupon.couponType;
+      if (couponType === 'DiscountValue') {
+        cp = {
+          type: 'DiscountValue',
+          value: coupon.discount,
+        };
+      }
+      if (couponType === 'DiscountPercent') {
+        cp = {
+          type: 'DiscountPercent',
+          value: coupon.discount,
+        };
+      }
+      if (couponType === 'Freeship') {
+        cp = {
+          type: 'Freeship',
+          value: 2,
+        };
+      }
+    }
+
+    await t.commit();
+
+    res.status(200).json({
+      statusCode: 200,
+      message: 'Success',
+      data: cp,
+    });
+  } catch (err) {
+    await t.rollback();
+    next(err);
+  }
+};
+
 export const createOrderWithoutCartController = async (
   req: Request<
     {},

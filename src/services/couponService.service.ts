@@ -39,8 +39,9 @@ export const assertCodeList = (codeList: string[]): boolean => {
 };
 
 export const assertCouponValidTime = (coupon: Coupon): boolean => {
-  const endDate = coupon.endDate;
+  const fromDate = new Date(coupon.fromDate);
+  const endDate = new Date(coupon.endDate);
   const currentDate = new Date();
 
-  return endDate >= currentDate;
+  return endDate >= currentDate && currentDate >= fromDate;
 };
