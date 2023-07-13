@@ -1,5 +1,5 @@
-<h1 align="center">Welcome to X - Sport 👋</h1>
-<h5 align="center"> Đồ án nhập môn công nghệ phần mềm - SE104 </h5>
+<h1 align="center">Welcome to Gocery 👋</h1>
+<h5 align="center"> Đồ án môn lập trình trên thiết bị di động - SE346 </h5>
 
 ## Gocery là gì?
 
