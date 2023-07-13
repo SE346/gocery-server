@@ -8,6 +8,7 @@ import {
   ProductImg,
   CouponItem,
   Coupon,
+  User,
 } from '../models';
 import createError from 'http-errors';
 import { ResJSON } from '../utils/interface';
@@ -129,6 +130,10 @@ export const getAllOrderController = async (
           attributes: {
             exclude: ['userMail', 'active', 'createdAt', 'updatedAt'],
           },
+        },
+        {
+          model: User,
+          attributes: ['mail'],
         },
       ],
       limit,
