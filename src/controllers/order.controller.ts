@@ -363,18 +363,21 @@ export const calculateApplyVoucher = async (
         cp = {
           type: 'DiscountValue',
           value: coupon.discount,
+          pricePointAccept: coupon.pricePointAccept,
         };
       }
       if (couponType === 'DiscountPercent') {
         cp = {
           type: 'DiscountPercent',
           value: coupon.discount,
+          pricePointAccept: coupon.pricePointAccept,
         };
       }
       if (couponType === 'Freeship') {
         cp = {
           type: 'Freeship',
           value: 2,
+          pricePointAccept: coupon.pricePointAccept,
         };
       }
     }
